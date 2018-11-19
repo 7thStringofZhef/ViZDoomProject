@@ -16,10 +16,10 @@
 	% proceedings, working notes, and technical reports.
 	%
 	\title{Formatting Instructions \\for Authors Using \LaTeX{}}
-	\author{AAAI Press\\
-		Association for the Advancement of Artificial Intelligence\\
-		2275 East Bayshore Road, Suite 160\\
-		Palo Alto, California 94303\\
+	\author{David Slayback\\
+		Northeastern University College of Computer and Information Science\\
+		440 Huntington Ave, No. 202\\
+		Boston, Massachusetts 02115\\
 	}
 	\maketitle
 	\begin{abstract}
@@ -44,10 +44,10 @@
 		\item Check every page of your paper before submitting it.
 	\end{itemize}
 	
-	\section{Copyright}
+	\section{Introduction}
 	All papers submitted for publication by AAAI Press must be accompanied by a valid signed copyright form or, in the case of technical reports, by a valid signed permission to distribute form. There are no exceptions to this requirement. You must send us the original version of this form. However, to meet the deadline, you may fax (1-650-321-4457) or scan and e-mail the form (pubforms14@aaai.org) to AAAI by the submission deadline, and then mail the original via postal mail to the AAAI office. \textbf{If you fail to send in a signed copyright or permission form, your paper will not be published.} You will find PDF versions of the AAAI copyright and permission to distribute forms in the author kit.
 	
-	\section{Formatting Requirements in Brief}
+	\section{Background}
 	We need source and PDF files that can be used in a variety of ways and can be output on a variety of devices. AAAI imposes some requirements on your source and PDF files that must be followed. Most of these requirements are based on our efforts to standardize conference manuscript properties and layout. These requirements are as follows, and all papers submitted to AAAI for publication must comply:
 	
 	\begin{itemize}
@@ -74,7 +74,7 @@
 	
 	If you do not follow the above requirements, it is likely that we will be unable to publish your paper.
 	
-	\section{What Files to Submit}
+	\section{Related Work}
 	You must submit the following items to ensure that your paper is published:
 	\begin{itemize}
 		\item A fully-compliant PDF file.
@@ -90,11 +90,11 @@
 	
 	\textbf{Do not send files that are not actually used in the paper.} We don't want you to send us any files not needed for compiling your paper, including, for example, this instructions file, unused graphics files, and so forth.  A shell script (created by an AAAI member --- it might not work without modification on your system) that might help you create the \LaTeX{} source package is included in the Author Kit.
 	
-	\section{Using \LaTeX{} to Format Your Paper}
+	\section{Project Description}
 	
 	The latest version of the AAAI style file is available on AAAI's website. Download this file and place it in a file named ``aaai.sty" in the \TeX\ search path. Placing it in the same directory as the paper should also work. You must download the latest version of the complete author kit so that you will have the latest instruction set.
 	
-	\subsection{Document Preamble}
+	\subsection{Experiments}
 	
 	In the \LaTeX{} source for your paper, you \textbf{must} place the following lines as shown in the example in this subsection. This command set-up is for three authors. Add or subtract author and address lines as necessary, and uncomment the portions that apply to you. In most instances, this is all you need to do to format your paper in the Times font. The helvet package will cause Helvetica to be used for sans serif, and the courier package will cause Courier to be used for the typewriter font. These files are part of the PSNFSS2e package, which is freely available from many Internet sites (and is often part of a standard installation).
 	
@@ -144,7 +144,7 @@
 		\end{small}
 	\end{quote}
 	
-	\subsection{Inserting Document Metadata with \LaTeX{}}
+	\subsection{Conclusion}
 	PDF files contain document summary information that enables us to create an Acrobat index (pdx) file, and also allows search engines to locate and present your paper more accurately. \textbf{Document Metadata  for Author and Title are REQUIRED.} 
 	
 	If your paper includes illustrations that are not compatible with PDF\TeX{} (such as .eps or .ps documents), you will need to convert them. The epstopdf package will usually work for eps files. You will need to convert your ps files to PDF however.

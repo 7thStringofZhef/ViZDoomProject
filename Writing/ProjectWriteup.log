@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.10.18)  19 NOV 2018 12:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.10.18)  19 NOV 2018 12:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -83,18 +83,12 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 
 
 ]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 93.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 93.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 93.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 93.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 97.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <9> on input line 115.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 115.
 
 Underfull \hbox (badness 10000) in paragraph at lines 106--145
 \OMS/cmsy/m/n/9 n\OT1/ptm/m/n/9 setlength\OMS/cmsy/m/n/9 fn\OT1/ptm/m/n/9 pdfpa
@@ -102,9 +96,6 @@ gewidth\OMS/cmsy/m/n/9 gf\OT1/ptm/m/n/9 8.5in\OMS/cmsy/m/n/9 g
  []
 
 [2]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 147.
-
 Underfull \hbox (badness 10000) in paragraph at lines 162--169
 
  []
@@ -155,6 +146,12 @@ Underfull \hbox (badness 1092) in paragraph at lines 294--297
 \OT1/ptm/m/n/10 If the ti-tle and au-thor in-for-ma-tion does not fit in the
  []
 
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 298.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 298.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 298.
 LaTeX Font Info:    Try loading font information for OT1+pcr on input line 299.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/ot1pcr.fd
@@ -197,7 +194,10 @@ Underfull \hbox (badness 5403) in paragraph at lines 367--368
 \OT1/ptm/m/n/10 resolution (such as 72 dpi) screen-dumps and GIF
  []
 
-[6] [7]
+[6]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 439.
+ [7]
 Underfull \hbox (badness 1028) in paragraph at lines 492--493
 \OT1/ptm/m/n/10 L[]T[]X is a dif-fi-cult pro-gram to mas-ter. If you've used
  []
@@ -228,7 +228,7 @@ cmsy9.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/urw/courier/ucrr8a.pf
 b></usr/local/texlive/2018/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/lo
 cal/texlive/2018/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texliv
 e/2018/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on ProjectWriteup.pdf (8 pages, 105942 bytes).
+Output written on ProjectWriteup.pdf (8 pages, 105990 bytes).
 PDF statistics:
  56 PDF objects out of 1000 (max. 8388607)
  39 compressed objects within 1 object stream
