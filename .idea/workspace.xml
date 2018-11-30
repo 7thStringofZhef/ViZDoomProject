@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="edd34510-f8d6-4d80-a0f9-368ed5a11342" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/MyCode/Hyperparams.ini" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/Hyperparams.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyCode/RAINBOW/DQN.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/RAINBOW/DQN.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,33 +15,34 @@
     <session id="1572149167">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.opened" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="cfg" value="3" />
+          <entry key="cfg" value="4" />
           <entry key="py" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Ini" value="3" />
+          <entry key="Ini" value="4" />
           <entry key="Python" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="cfg" value="380" />
-          <entry key="ini" value="28" />
-          <entry key="py" value="4251" />
+          <entry key="ini" value="80" />
+          <entry key="py" value="5369" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Ini" value="408" />
-          <entry key="Python" value="4251" />
+          <entry key="Ini" value="460" />
+          <entry key="Python" value="5369" />
         </counts>
       </usages-collector>
     </session>
@@ -74,13 +76,25 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/DQN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+            <state relative-caret-position="583">
+              <caret line="41" column="69" selection-start-line="41" selection-start-column="69" selection-end-line="41" selection-end-column="69" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
-                <marker date="1543602441413" expanded="true" signature="139:267" ph="..." />
-                <marker date="1543602441413" expanded="true" signature="350:355" ph="..." />
+                <marker date="1543618324053" expanded="true" signature="266:271" ph="..." />
+                <marker date="1543618324053" expanded="true" signature="478:522" ph="..." />
+                <marker date="1543618324053" expanded="true" signature="605:610" ph="..." />
+                <marker date="1543618324053" expanded="true" signature="1093:1908" ph="..." />
+                <marker date="1543618324053" expanded="true" signature="1952:1957" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MyCode/CS7180Scenario.cfg">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="420">
+              <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -100,8 +114,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MyCode/Hyperparams.ini">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" selection-end-column="17" />
+            <state relative-caret-position="300">
+              <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -137,16 +151,16 @@
         <option value="$PROJECT_DIR$/MyCode/Hyperparams.cfg" />
         <option value="$PROJECT_DIR$/MyCode/RAINBOW/NoisyLinear.py" />
         <option value="$PROJECT_DIR$/MyCode/DOOM/FrameProcessing.py" />
-        <option value="$PROJECT_DIR$/MyCode/Hyperparams.ini" />
         <option value="$PROJECT_DIR$/MyCode/RAINBOW/ModelMemory.py" />
         <option value="$PROJECT_DIR$/MyCode/doomMain.py" />
+        <option value="$PROJECT_DIR$/MyCode/Hyperparams.ini" />
         <option value="$PROJECT_DIR$/MyCode/RAINBOW/DQN.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="928" />
-    <option name="y" value="90" />
+    <option name="x" value="368" />
+    <option name="y" value="115" />
     <option name="width" value="1404" />
     <option name="height" value="1020" />
   </component>
@@ -215,7 +229,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="928" y="90" width="1404" height="1020" extended-state="0" />
+    <frame x="368" y="115" width="1404" height="1020" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="DB Browser" />
@@ -279,13 +293,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyCode/Hyperparams.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/NoisyLinear.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="555">
@@ -293,13 +300,6 @@
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyCode/CS7180Scenario.cfg">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -316,14 +316,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MyCode/CS7180Scenario.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyCode/Hyperparams.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/DQN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+        <state relative-caret-position="583">
+          <caret line="41" column="69" selection-start-line="41" selection-start-column="69" selection-end-line="41" selection-end-column="69" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
-            <marker date="1543602441413" expanded="true" signature="139:267" ph="..." />
-            <marker date="1543602441413" expanded="true" signature="350:355" ph="..." />
+            <marker date="1543618324053" expanded="true" signature="266:271" ph="..." />
+            <marker date="1543618324053" expanded="true" signature="478:522" ph="..." />
+            <marker date="1543618324053" expanded="true" signature="605:610" ph="..." />
+            <marker date="1543618324053" expanded="true" signature="1093:1908" ph="..." />
+            <marker date="1543618324053" expanded="true" signature="1952:1957" ph="..." />
           </folding>
         </state>
       </provider>
