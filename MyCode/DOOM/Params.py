@@ -3,6 +3,7 @@ from vizdoom import GameVariable
 
 class doomParams(object):
     scenarioPath='CS7180Scenario.cfg'
+    numEpisodes=3000
 
     #RAINBOW COMPONENTS
     prioritizedReplay = 1

@@ -4,12 +4,13 @@ import configparser
 import torch
 from functools import partial
 import numpy as np
+import numpy.random as npr
 from collections import deque
 
 from vizdoom import DoomGame, Mode, ScreenFormat, ScreenResolution, GameVariable
 from DOOM.FrameProcessing import processImage
 from DOOM.Params import doomParams
-from RAINBOW.ModelMemory import PrioritizedReplayMemory, LinearSchedule
+from RAINBOW.ModelMemory import PrioritizedReplayMemory, LinearSchedule, GameState
 from RAINBOW.DQN import DQNRecurrent
 
 
@@ -23,11 +24,6 @@ def initGameWithParams(configFilePath):
     game.init()
     return game
 
-def runEpisode(game):
-    game.new_episode()
-    while not game.is_episode_finished():
-        state = game.get_state()
-
 
 class DoomGameEnv(object):
     def __init__(self, params=doomParams):
@@ -40,7 +36,7 @@ class DoomGameEnv(object):
         self.actions = np.identity(self.numActions, dtype=np.int32).tolist()  # One-hot encoding of actions
         self.gameVariables = params.gameVariables
         self.numGameVariables = len(self.gameVariables)
-        self.stateBuffer = deque([], maxlen=params.recurrenceHistory)  # Store last histSize states
+        self.reset()
 
     # Return last history states
     def step(self, action):
@@ -51,11 +47,17 @@ class DoomGameEnv(object):
             reward += self.game.advance_action()
         is_done = self.game.is_episode_finished() or self.game.is_player_dead()
         newState = self.game.get_state()
-        self.stateBuffer.append(newState)
+        processedState = GameState(newState.screen_buffer, newState.game_variables)
+        self.stateBuffer.append(processedState)
         return self.stateBuffer, reward, is_done
 
     def reset(self):
         self.game.new_episode()
+        self.stateBuffer = deque([], maxlen=self.params.recurrenceHistory+1)
+        newState = self.game.get_state()
+        processedState = GameState(newState.screen_buffer, newState.game_variables)
+        self.stateBuffer.append(processedState)
+        return processedState
 
     def getEpisodeReward(self):
         return self.game.get_total_reward()
@@ -63,6 +65,10 @@ class DoomGameEnv(object):
 
 def updateTargetNet(policyNet, targetNet):
     targetNet.module.load_state_dict(policyNet.module.state_dict())
+
+# Perform the update step on my policy network
+def optimizeNet(policyNet, targetNet, batch):
+    pass
 
 def train(env, params):
     # Policy net
@@ -92,7 +98,24 @@ def train(env, params):
     else:
         epsilon = None
 
+    # Optimize with Adam
     optimFunction = torch.optim.Adam(policyNet.module.parameters(), lr=params.learningRate)
+
+    frameCounter = 0
+    episodeRewards = list()
+    episodeLengths = list()
+
+    for episode in range(params.numEpisodes):
+        isDone = False
+        currState = env.reset()
+        while not isDone:
+            # Take action based on current state or on eps
+            if epsilon is not None and npr.randn() < epsilon.value(frameCounter):
+                action = npr.randint(0, env.numActions)
+            else:
+                action = policyNet(currState).argmax(1).item()
+            pass
+
 
 
 
