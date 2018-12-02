@@ -28,31 +28,6 @@ class LinearSchedule(object):
         fraction = min(float(t) / self.schedule_timesteps, 1.0)
         return self.initial_p + fraction * (self.final_p - self.initial_p)
 
-# Basic replay memory
-class ReplayMemory(object):
-    def __init__(self, capacity=200000):
-        self.capacity = capacity
-        self.index = 0
-        self.memory = []
-
-    def add(self, *args):
-        if len(self.memory) < self.capacity:
-            self.memory.append(None)
-        self.memory[self.index] = Transition(*args)
-        self.index = (self.index+1) % self.capacity  # Circular buffer
-
-    def sample(self, batchSize, historySize=1):
-        currSize = len(self.memory)
-        if currSize == self.capacity:
-            indices = npr.choice(currSize, batchSize)
-        else:
-            indices = npr.choice(currSize-(historySize-1), batchSize)
-        endIndices = indices + (historySize-1)
-        transitions = [self.memory[index:endIndex] for index, endIndex in zip(indices, endIndices)]
-        return transitions, indices
-
-    def __len__(self):
-        return len(self.memory)
 
 # Store priorities as binary tree
 class SegmentTree(object):
@@ -113,7 +88,7 @@ class SegmentTree(object):
 class PrioritizedReplayMemory(object):
     def __init__(self, params):
         self.capacity = params.replayMemoryCapacity
-        self.history = params.minHistorySize
+        self.history = params.recurrenceHistory
         self.gamma = params.gamma
         self.multiStepN = params.multiStep
         self.priority_weight = params.priorityBetaStart # Initial importance sampling weight β, annealed to 1 over course of training

@@ -12,10 +12,10 @@ class NoisyLinearLayer(nn.Module):
         self.initStd = initStd
         self.weightMean = nn.Parameter(torch.empty(outputs, inputs))
         self.weightSigma = nn.Parameter(torch.empty(outputs, inputs))
-        self.registerBuffer('weightEpsilon', torch.empty(outputs, inputs))
+        self.register_buffer('weightEpsilon', torch.empty(outputs, inputs))
         self.biasMean = nn.Parameter(torch.empty(outputs))
         self.biasSigma = nn.Parameter(torch.empty(outputs))
-        self.registerBuffer('biasEpsilon', torch.empty(outputs))
+        self.register_buffer('biasEpsilon', torch.empty(outputs))
         self.resetParameters()
         self.resetNoise()
 

@@ -3,20 +3,21 @@ from torch.autograd import Variable as V
 import torch
 
 import numpy as np
-from ..DOOM.Params import doomParams
+from MyCode.DOOM.Params import doomParams
+from MyCode.RAINBOW.NoisyLinear import NoisyLinearLayer
 
 
 # CNN component of DQN (based on Arnold)
 def buildCNNComponent(module, inputShape):
     channels, height, width = inputShape
-    module.convolutional = nn.Sequential([
+    module.convolutional = nn.Sequential(
         nn.Conv2d(channels, 32, (8, 8), stride=(4, 4)),
         nn.BatchNorm2d(32),
         nn.ReLU(),
         nn.Conv2d(32, 64, (4,4), stride=(2,2)),
         nn.BatchNorm2d(64),
-        nn.ReLU,
-    ])
+        nn.ReLU(),
+    )
     x = torch.autograd.Variable(torch.FloatTensor(1, channels, height, width).zero_())
     module.convolutionalOutputDim = module.convolutional(x).nelement()
 
@@ -30,18 +31,15 @@ class GameVariableEmbedding(nn.Embedding):
     def forward(self, indices):
         return super(GameVariableEmbedding, self).forward(indices.div(self.bucketSize))
 
-def buildGameVariableComponent(module, gameVars, gameVarBucketSizes):
+def buildGameVariableComponent(module, gameVars, gameVarBucketSizes, embeddingDim, gameVarNumValues=(101,101)):
     module.gameVariables = gameVars
     module.numGameVariables = len(gameVars)
     module.gameVariableEmbeddings = []
-    for i, (name, numValues) in enumerate(gameVars):
-        embedding = GameVariableEmbedding(gameVarBucketSizes[i], numValues)
-        setattr(module, '%s_emb' % name, embedding)
+    names = ['health','bullets']
+    for i in range(len(gameVars)):  #101 and 101 should be num values?
+        embedding = GameVariableEmbedding(gameVarBucketSizes[i], gameVarNumValues[i], embeddingDim)
+        setattr(module, '%s_emb' % names[i], embedding)
         module.gameVariableEmbeddings.append(embedding)
-
-
-def buildRecurrentLayer(module, inputShape):
-    module = nn.LSTM(512)
 
 
 class DQNModuleBase(nn.Module):
@@ -56,34 +54,36 @@ class DQNModuleBase(nn.Module):
         self.outputDim = self.convolutionalOutputDim
 
         # game variables network
-        buildGameVariableComponent(self, params.gameVariables, params.gameVariableBucketSizes)
-        self.outputDim += sum(params.embeddingDim)
+        buildGameVariableComponent(self, params.gameVariables, params.gameVariableBucketSizes, params.embeddingDim)
+        self.outputDim += params.embeddingDim * params.numGameVariables
 
-        # dropout layer. Is it used?
-        #self.dropout_layer = nn.Dropout(params.dropout)
+        # dropout layer.
+        self.dropoutLayer = nn.Dropout(params.dropout)
 
         # Estimate state-action value function Q(s, a)
         # If dueling network, estimate advantage function A(s, a)
-        self.Q = nn.Linear(params.hiddenDimensions, self.numActions)
+        if not params.noisyLinear:
+            self.Q = nn.Linear(params.hiddenDimensions, self.numActions)
+        else:
+            self.Q = NoisyLinearLayer(params.hiddenDimensions, self.numActions, params.noisyParam)
 
         self.dueling = params.dueling
         if self.dueling:
-            self.V = nn.Linear(params.hiddenDimensions, 1)
+            if not params.noisyLinear:
+                self.V = nn.Linear(params.hiddenDimensions, 1)
+            else:
+                self.V = NoisyLinearLayer(params.hiddenDimensions, 1, params.noisyParam)
 
     def base_forward(self, inputBuffers, inputVariables):
         """
         Argument sizes:
             - inputBuffers of shape (batch_size, conv_input_size, h, w)
             - inputScreens of shape (batch_size,)
-        where for feedforward:
-            batch_size == params.batch_size,
-            conv_input_size == hist_size * n_feature_maps
         and for recurrent:
             batch_size == params.batch_size * (hist_size + n_rec_updates)
             conv_input_size == n_feature_maps
         Returns:
             - output of shape (batch_size, output_dim)
-            - output_gf of shape (batch_size, n_features)
         """
         batch_size = inputBuffers.size(0)
 
@@ -98,8 +98,12 @@ class DQNModuleBase(nn.Module):
         # create state input
         output = torch.cat([convOutput] + embeddings, 1)
 
+        # Pass through dropout layer
+        output = self.dropoutLayer(output)
+
         return output
 
+    # Split if dueling network
     def head_forward(self, stateInput):
         if self.dueling:
             a = self.Q(stateInput)  # advantage branch
@@ -118,11 +122,11 @@ class DQNModuleRecurrent(DQNModuleBase):
                            1,
                            batch_first=True)
 
-    def forward(self, inputScreens, inputVariables, prev_state):
+    def forward(self, inputScreens, inputVariables, prevState):
         """
         Argument sizes:
-            - x_screens of shape (batch_size, seq_len, n_fm, h, w)
-            - x_variables list of n_var tensors of shape (batch_size, seq_len)
+            - inputScreens of shape (batch_size, seqLen, n_fm, h, w)
+            - inputVariables list of n_var tensors of shape (batchSize, seqLen)
         """
         batchSize = inputScreens.size(0)
         seqLength = inputScreens.size(1)
@@ -137,16 +141,16 @@ class DQNModuleRecurrent(DQNModuleBase):
 
         # unflatten the input and apply the RNN
         rnn_input = state_input.view(batchSize, seqLength, self.outputDim)
-        rnn_output, next_state = self.rnn(rnn_input, prev_state)
+        rnn_output, nextState = self.rnn(rnn_input, prevState)
         rnn_output = rnn_output.contiguous()
 
         # apply the head to RNN hidden states (simulating larger batch again)
-        output_sc = self.head_forward(rnn_output.view(-1, self.hiddenDimensionim))
+        output = self.head_forward(rnn_output.view(-1, self.hiddenDimensionim))
 
         # unflatten scores and game features
-        output_sc = output_sc.view(batchSize, seqLength, output_sc.size(1))
+        output = output.view(batchSize, seqLength, output.size(1))
 
-        return output_sc, next_state
+        return output, nextState
 
 
 class DQN(object):
@@ -154,9 +158,9 @@ class DQN(object):
     def __init__(self, params):
         # network parameters
         self.params = params
-        self.screenShape = (params.n_fm, params.height, params.width)
-        self.histSize = params.hist_size
-        self.n_variables = params.n_variables
+        self.screenShape = params.inputShape
+        self.histSize = params.recurrenceHistory
+        self.n_variables = params.numGameVariables
 
         # main module + loss functions
         self.module = self.DQNModuleClass(params)
@@ -216,7 +220,7 @@ class DQNRecurrent(DQN):
         h_0 = torch.FloatTensor(1, params.batchSize,
                                 params.hiddenDimensions).zero_()
         self.init_state_t = self.get_var(h_0)
-        self.init_state_e = torch.autograd.Variable(self.init_state_t[:, :1, :].data.clone(), volatile=True)
+        self.init_state_e = torch.autograd.Variable(self.init_state_t[:, :1, :].data.clone(), requires_grad=False)
         self.init_state_t = (self.init_state_t, self.init_state_t)
         self.init_state_e = (self.init_state_e, self.init_state_e)
         self.reset()
@@ -233,7 +237,7 @@ class DQNRecurrent(DQN):
         output = self.module(
             screens.view(1, self.histSize, *self.screenShape),
             [variables[:, i].contiguous().view(1, self.histSize)
-             for i in range(self.params.n_variables)],
+             for i in range(self.params.numGameVariables)],
             prev_state=self.prev_state
         )
 

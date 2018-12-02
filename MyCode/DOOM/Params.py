@@ -2,6 +2,8 @@
 from vizdoom import GameVariable
 
 class doomParams(object):
+    scenarioPath='CS7180Scenario.cfg'
+
     #RAINBOW COMPONENTS
     prioritizedReplay = 1
     noisyLinear = 1
@@ -20,11 +22,10 @@ class doomParams(object):
     learningRate=0.001
     recurrenceHistory=4
     trainingFrequency=4
-    minHistorySize=4
-    historySize=8
     numRecurrentUpdates=2
     embeddingDim=32
     numActions=3
+    dropout=0.5
 
     #[RAINBOW PARAMS]
     targetUpdateFrequency=1000
