@@ -4,7 +4,8 @@ import torch
 import numpy as np
 
 Transition = namedtuple('Transition', ('timestep', 'state', 'action', 'reward', 'isDone'))
-blank_trans = Transition(0, torch.zeros(108, 60, 3, dtype=torch.uint8), None, 0, False)
+GameState = namedtuple('State', ('buffer', 'gameVars'))
+blank_trans = Transition(0, GameState(torch.zeros(3, 60, 108, dtype=torch.uint8), [0., 0.]), None, 0, True)
 
 # For the beta value in the distribution
 class LinearSchedule(object):
@@ -69,7 +70,7 @@ class SegmentTree(object):
         left, right = 2 * parent + 1, 2 * parent + 2
         self.sum_tree[parent] = self.sum_tree[left] + self.sum_tree[right]
         if parent != 0:
-          self._propagate(parent, value)
+            self._propagate(parent, value)
 
   # Updates value given a tree index
     def update(self, index, value):
@@ -176,7 +177,7 @@ class PrioritizedReplayMemory(object):
         probs = np.array(probs, dtype=np.float32) / p_total # Calculate normalised probabilities
         capacity = self.capacity if self.transitions.full else self.transitions.index
         weights = (capacity * probs) ** -self.priority_weight  # Compute importance-sampling weights w
-        weights = torch.tensor(weights / weights.max(), dtype=torch.float32, device=self.device)   # Normalise by max importance-sampling weight from batch
+        weights = torch.Tensor(weights / weights.max(), dtype=torch.float32, device=self.device)   # Normalise by max importance-sampling weight from batch
         return tree_idxs, states, actions, returns, next_states, nonterminals, weights
 
 

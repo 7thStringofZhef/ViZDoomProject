@@ -24,6 +24,7 @@ class doomParams(object):
     historySize=8
     numRecurrentUpdates=2
     embeddingDim=32
+    numActions=3
 
     #[RAINBOW PARAMS]
     targetUpdateFrequency=1000
@@ -39,5 +40,6 @@ class doomParams(object):
     hiddenDimensions = 512
     gameVariables=[GameVariable.AMMO2, GameVariable.HEALTH]
     gameVariableBucketSizes=[1, 1]
+    numGameVariables=2
 
 
