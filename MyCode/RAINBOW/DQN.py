@@ -202,7 +202,6 @@ class DQN(object):
 
     def next_action(self, last_states):
         scores, pred_features = self.f_eval(last_states)
-        seqLength = self.params.minHistorySize
         scores = scores[0, -1]
         action_id = scores.data.max(0)[1][0]
         self.pred_features = pred_features
@@ -247,7 +246,7 @@ class DQNRecurrent(DQN):
             self.prepare_f_train_args(screens, variables, actions, rewards, isDone)
 
         batchSize = self.params.batchSize
-        seqLength = self.histSize + 1
+        seqLength = self.histSize + self.params.numRecurrentUpdates
 
         output = self.module(
             screens,
@@ -267,8 +266,8 @@ class DQNRecurrent(DQN):
 
         # dqn loss
         loss = self.lossFunction(
-            scores1.view(batchSize, -1)[:, -1:],
-            torch.autograd.Variable(scores2.data[:, -1:])
+            scores1.view(batchSize, -1)[:, -self.params.numRecurrentUpdates:],
+            torch.autograd.Variable(scores2.data[:, -self.params.numRecurrentUpdates:])
         )
 
         return loss

@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="edd34510-f8d6-4d80-a0f9-368ed5a11342" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyCode/DOOM/Params.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/DOOM/Params.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyCode/RAINBOW/DQN.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/RAINBOW/DQN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MyCode/RAINBOW/ModelMemory.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/RAINBOW/ModelMemory.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,13 +24,13 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="cfg" value="4" />
-          <entry key="py" value="34" />
+          <entry key="py" value="35" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Ini" value="4" />
-          <entry key="Python" value="34" />
+          <entry key="Python" value="35" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -41,13 +38,13 @@
           <entry key="Python Console" value="1110" />
           <entry key="cfg" value="385" />
           <entry key="ini" value="80" />
-          <entry key="py" value="7820" />
+          <entry key="py" value="7834" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Ini" value="465" />
-          <entry key="Python" value="8930" />
+          <entry key="Python" value="8944" />
         </counts>
       </usages-collector>
     </session>
@@ -72,14 +69,14 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/DQN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="538">
-              <caret line="205" column="30" selection-start-line="205" selection-start-column="30" selection-end-line="205" selection-end-column="30" />
+            <state relative-caret-position="-767">
+              <caret line="166" column="22" selection-start-line="166" selection-start-column="22" selection-end-line="166" selection-end-column="22" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
-                <marker date="1543758576957" expanded="true" signature="132:176" ph="..." />
-                <marker date="1543758576957" expanded="true" signature="259:264" ph="..." />
-                <marker date="1543758576957" expanded="true" signature="765:1580" ph="..." />
-                <marker date="1543758576957" expanded="true" signature="1624:1629" ph="..." />
+                <marker date="1543758769878" expanded="true" signature="132:176" ph="..." />
+                <marker date="1543758769878" expanded="true" signature="259:264" ph="..." />
+                <marker date="1543758769878" expanded="true" signature="765:1580" ph="..." />
+                <marker date="1543758769878" expanded="true" signature="1624:1629" ph="..." />
               </folding>
             </state>
           </provider>
@@ -100,7 +97,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/recurrent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1318">
+            <state relative-caret-position="2130">
               <caret line="142" lean-forward="true" selection-start-line="142" selection-end-line="142" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
@@ -155,8 +152,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MyCode/DOOM/Params.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="42" column="22" lean-forward="true" selection-start-line="42" selection-start-column="22" selection-end-line="42" selection-end-column="22" />
+            <state>
+              <caret column="14" lean-forward="true" selection-start-column="14" selection-end-column="14" />
               <folding>
                 <marker date="1543757518034" expanded="true" signature="744:749" ph="..." />
               </folding>
@@ -518,16 +515,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1012">
-          <caret line="82" column="49" lean-forward="true" selection-start-line="82" selection-start-column="49" selection-end-line="82" selection-end-column="49" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/doom/game.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="662">
@@ -545,10 +532,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MyCode/DOOM/Params.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="14" lean-forward="true" selection-start-column="14" selection-end-column="14" />
+          <folding>
+            <marker date="1543757518034" expanded="true" signature="744:749" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1012">
+          <caret line="82" column="49" lean-forward="true" selection-start-line="82" selection-start-column="49" selection-end-line="82" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1258">
-          <caret line="219" column="23" selection-start-line="219" selection-start-column="23" selection-end-line="219" selection-end-column="23" />
+        <state relative-caret-position="262">
+          <caret line="154" column="25" lean-forward="true" selection-start-line="154" selection-start-column="25" selection-end-line="154" selection-end-column="25" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -557,7 +564,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/recurrent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1318">
+        <state relative-caret-position="2130">
           <caret line="142" lean-forward="true" selection-start-line="142" selection-end-line="142" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
@@ -565,26 +572,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyCode/DOOM/Params.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="22" lean-forward="true" selection-start-line="42" selection-start-column="22" selection-end-line="42" selection-end-column="22" />
-          <folding>
-            <marker date="1543757518034" expanded="true" signature="744:749" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/DQN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="538">
-          <caret line="205" column="30" selection-start-line="205" selection-start-column="30" selection-end-line="205" selection-end-column="30" />
+        <state relative-caret-position="-767">
+          <caret line="166" column="22" selection-start-line="166" selection-start-column="22" selection-end-line="166" selection-end-column="22" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
-            <marker date="1543758576957" expanded="true" signature="132:176" ph="..." />
-            <marker date="1543758576957" expanded="true" signature="259:264" ph="..." />
-            <marker date="1543758576957" expanded="true" signature="765:1580" ph="..." />
-            <marker date="1543758576957" expanded="true" signature="1624:1629" ph="..." />
+            <marker date="1543758769878" expanded="true" signature="132:176" ph="..." />
+            <marker date="1543758769878" expanded="true" signature="259:264" ph="..." />
+            <marker date="1543758769878" expanded="true" signature="765:1580" ph="..." />
+            <marker date="1543758769878" expanded="true" signature="1624:1629" ph="..." />
           </folding>
         </state>
       </provider>
