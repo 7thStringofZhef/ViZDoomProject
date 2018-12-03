@@ -71,10 +71,15 @@ def updateTargetNet(policyNet, targetNet):
     targetNet.module.load_state_dict(policyNet.module.state_dict())
 
 # Perform the update step on my policy network
-def optimizeNet(policyNet, targetNet, memory, params):
+def optimizeNet(policyNet, targetNet, memory, optimizer, params):
     indices, states, actions, returns, nextStates, isDones, weights = memory.sample(params.batchSize)
-    policyNet.f_train(states, actions, returns, isDones)
+    loss = policyNet.f_train(states, actions, returns, isDones)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
+
+    """
     # If using target Q
     if params.double:
         pass
@@ -84,6 +89,7 @@ def optimizeNet(policyNet, targetNet, memory, params):
     # If using prioritized replay, update priorities
     if params.prioritizedReplay:
         memory.update
+    """
 
 
 def train(env, params):
@@ -149,7 +155,7 @@ def train(env, params):
             if frameCounter > 4000:
                 # If it's time to train
                 if frameCounter % params.trainingFrequency == 0:
-                    optimizeNet(policyNet, targetNet, memory, params)
+                    optimizeNet(policyNet, targetNet, memory, optimFunction, params)
 
                 # If it's time to update target net
                 if params.double and frameCounter % params.targetUpdateFrequency == 0:
