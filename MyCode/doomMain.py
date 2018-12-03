@@ -1,8 +1,7 @@
 from __future__ import absolute_import
 
-import configparser
+import os
 import torch
-from functools import partial
 import numpy as np
 import numpy.random as npr
 from collections import deque
@@ -74,14 +73,15 @@ def updateTargetNet(policyNet, targetNet):
 def optimizeNet(policyNet, targetNet, memory, optimizer, params):
     indices, states, actions, returns, nextStates, isDones, weights = memory.sample(params.batchSize)
     loss = policyNet.f_train(states, actions, returns, isDones, targetNet)  # batchSize*numRecurrentUpdates
-    loss = (loss.transpose(0,1) * weights).transpose(0,1)  # Multiply by priority weights
+    if params.prioritizedReplay:
+        loss = (loss.transpose(0,1) * weights).transpose(0,1)  # Multiply by priority weights
     optimizer.zero_grad()
     loss.mean().backward()
     optimizer.step()
 
     # If using prioritized replay, update priorities
     if params.prioritizedReplay:
-        memory.updatePriorities(indices, loss.detach().cpu().numpy()[:,-1])
+        memory.updatePriorities(indices, loss.detach().cpu().numpy()[:, -1])
 
 
 def train(env, params):
@@ -117,6 +117,7 @@ def train(env, params):
 
     frameCounter = 0
     framesBeforeTraining = params.framesBeforeTraining  # Don't start training or annealing before this
+    trainingFrameCounter = 0
     episodeRewards = list()
     episodeLengths = list()
     episodeTimes = list()
@@ -134,7 +135,7 @@ def train(env, params):
                 policyNet.resetNoise()
 
             # Take action based on current state or on eps
-            if epsilon is not None and npr.rand() < epsilon.value(frameCounter-framesBeforeTraining):
+            if epsilon is not None and npr.rand() < epsilon.value(trainingFrameCounter):
                 action = npr.randint(0, env.numActions)
             else:
                 action = policyNet.next_action(currState)
@@ -144,7 +145,7 @@ def train(env, params):
             frameCounter += 1
             memory.append(currState[-1], action, reward, isDone)  # Add last frame of game state
             # Populate with random experiences first
-            if frameCounter > 4000:
+            if frameCounter > framesBeforeTraining:
                 # If it's time to train
                 if frameCounter % params.trainingFrequency == 0:
                     optimizeNet(policyNet, targetNet, memory, optimFunction, params)
@@ -152,6 +153,12 @@ def train(env, params):
                 # If it's time to update target net
                 if params.double and frameCounter % params.targetUpdateFrequency == 0:
                     updateTargetNet(policyNet, targetNet)
+
+                # Anneal priority beta if needed
+                if params.prioritizedReplay:
+                    memory.priority_weight = beta.value(trainingFrameCounter)
+
+                trainingFrameCounter += 1
 
 
 
@@ -161,7 +168,7 @@ def train(env, params):
         episodeLengths.append(episodeFrameCounter)
         episodeTimes.append(time()-startTime)
 
-    return episodeRewards, episodeLengths, episodeTimes
+    return episodeRewards, episodeLengths, episodeTimes, policyNet
 
 
 
@@ -174,6 +181,9 @@ def oneHotList(action, numActions):
 
 
 if __name__ == "__main__":
+    resultsPath = os.path.join(os.getcwd(), 'Results')
     gameEnv = DoomGameEnv()
-    train(gameEnv, doomParams)
+    rewards, lengths, times, model = train(gameEnv, doomParams)
+
+    torch.save(model.module.state_dict(), '')
 

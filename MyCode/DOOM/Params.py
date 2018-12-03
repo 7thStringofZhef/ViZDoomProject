@@ -37,7 +37,7 @@ class doomParams(object):
     priorityOmega=0.5
 
     #Other
-    replayMemoryCapacity=500000
+    replayMemoryCapacity=1000000
     inputShape = (3, 60, 108)  # Channels*width*height
     hiddenDimensions = 512
     gameVariables=[GameVariable.AMMO2, GameVariable.HEALTH]
