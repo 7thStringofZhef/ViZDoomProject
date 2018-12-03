@@ -42,22 +42,23 @@ class DoomGameEnv(object):
     def step(self, action):
         reward = 0
         is_done = False
-        self.game.set_action(action)
-        for _ in range(self.frameskip):
-            reward += self.game.advance_action()
+        reward += self.game.make_action(action, self.frameskip)
         is_done = self.game.is_episode_finished() or self.game.is_player_dead()
         newState = self.game.get_state()
-        processedState = gameStateToTensor(newState)
-        self.stateBuffer.append(processedState)
+        if not is_done:
+            processedState = gameStateToTensor(newState)
+            self.stateBuffer.append(processedState)
+        else:
+            pass
         return list(self.stateBuffer), reward, is_done
 
     def reset(self):
         self.game.new_episode()
         # Start with a queue of all blank frames
-        self.stateBuffer = deque([], maxlen=self.params.recurrenceHistory+1)
+        self.stateBuffer = deque([], maxlen=self.params.recurrenceHistory+self.params.numRecurrentUpdates)
         newState = self.game.get_state()
         processedState = gameStateToTensor(newState)
-        for i in range(self.params.recurrenceHistory+1):
+        for i in range(self.params.recurrenceHistory+self.params.numRecurrentUpdates):
             self.stateBuffer.append(processedState)
         return list(self.stateBuffer)
 
@@ -109,6 +110,7 @@ def train(env, params):
 
 
     for episode in range(params.numEpisodes):
+        print('Starting episode ' + str(episode+1))
         episodeFrameCounter = 0
         isDone = False
         currState = env.reset()
@@ -118,16 +120,21 @@ def train(env, params):
                 action = npr.randint(0, env.numActions)
             else:
                 action = policyNet.next_action(currState)
-            pass
+
+            newState, reward, isDone = env.step(oneHotList(action, env.numActions))
             episodeFrameCounter += 1
             frameCounter += 1
 
+        print('Episode reward ' + str(env.getEpisodeReward()))
         episodeRewards.append(env.getEpisodeReward())
         episodeLengths.append(episodeFrameCounter)
 
 
 
-
+def oneHotList(action, numActions):
+    oneHot = list(np.zeros(numActions, dtype=np.int32))
+    oneHot[action] = 1
+    return oneHot
 
 
 

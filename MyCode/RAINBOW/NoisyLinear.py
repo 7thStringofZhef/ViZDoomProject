@@ -41,8 +41,9 @@ class NoisyLinearLayer(nn.Module):
 
     # Define forward pass
     # If training, we inject noise. If testing, we leave it out
-    def forward(self):
+    def forward(self, stateInput):
         if self.training:
-            return functional.linear(input, self.weightMean+self.weightSigma*self.weightEpsilon, self.biasMean+self.biasSigma*self.biasEpsilon)
+            return functional.linear(stateInput, self.weightMean+self.weightSigma*self.weightEpsilon,
+                                     self.biasMean+self.biasSigma*self.biasEpsilon)
         else:
-            return functional.linear(input, self.weightMean, self.biasMean)
+            return functional.linear(stateInput, self.weightMean, self.biasMean)

@@ -93,7 +93,7 @@ class DQNModuleBase(nn.Module):
 
         # game variables
         embeddings = [self.gameVariableEmbeddings[i](inputVariables[i])
-                        for i in range(self.n_variables)]
+                        for i in range(len(inputVariables))]
 
         # create state input
         output = torch.cat([convOutput] + embeddings, 1)
@@ -145,7 +145,7 @@ class DQNModuleRecurrent(DQNModuleBase):
         rnn_output = rnn_output.contiguous()
 
         # apply the head to RNN hidden states (simulating larger batch again)
-        output = self.head_forward(rnn_output.view(-1, self.hiddenDimensionim))
+        output = self.head_forward(rnn_output.view(-1, self.hiddenDimension))
 
         # unflatten scores and game features
         output = output.view(batchSize, seqLength, output.size(1))
@@ -206,8 +206,8 @@ class DQN(object):
 
     def next_action(self, last_states):
         scores = self.f_eval(last_states)
-        scores = scores[0, -1]
-        action_id = scores.data.max(0)[1][0]
+        scores = scores[0, -1]  # Q of last state in sequence
+        action_id = scores.data.max(0)[1].item()
         return action_id
 
 class DQNRecurrent(DQN):
@@ -226,22 +226,22 @@ class DQNRecurrent(DQN):
 
     def reset(self):
         # prev_state is only used for evaluation, so has a batch size of 1
-        self.prev_state = self.init_state_e
+        self.prevState = self.init_state_e
 
     def f_eval(self, last_states):
 
-        screens, variables = self.prepare_f_eval_args(last_states)
+        screens, variables = self.prepare_f_eval_args(last_states[len(last_states)-(len(last_states)-self.params.numRecurrentUpdates):])
 
         # feed the last `hist_size` ones
         output = self.module(
             screens.view(1, self.histSize, *self.screenShape),
             [variables[:, i].contiguous().view(1, self.histSize)
              for i in range(self.params.numGameVariables)],
-            prev_state=self.prev_state
+            prevState=self.prevState
         )
 
         # do not return the recurrent state
-        return output[:-1]
+        return output[0] # This is q-value
 
     def f_train(self, screens, variables, actions, rewards, isDone):
 
