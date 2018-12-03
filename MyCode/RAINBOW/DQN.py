@@ -77,19 +77,19 @@ class DQNModuleBase(nn.Module):
     def base_forward(self, inputBuffers, inputVariables):
         """
         Argument sizes:
-            - inputBuffers of shape (batch_size, conv_input_size, h, w)
+            - inputBuffers of shape (batch_size, channels, h, w)
             - inputScreens of shape (batch_size,)
         and for recurrent:
             batch_size == params.batch_size * (hist_size + n_rec_updates)
-            conv_input_size == n_feature_maps
+            channels == number of image channels
         Returns:
             - output of shape (batch_size, output_dim)
         """
-        batch_size = inputBuffers.size(0)
+        batchSize = inputBuffers.size(0)
 
         # convolution
         inputBuffers = inputBuffers / 255.
-        convOutput = self.convolutional(inputBuffers).view(batch_size, -1)
+        convOutput = self.convolutional(inputBuffers).view(batchSize, -1)
 
         # game variables
         embeddings = [self.gameVariableEmbeddings[i](inputVariables[i])
@@ -126,13 +126,13 @@ class DQNModuleRecurrent(DQNModuleBase):
         """
         Argument sizes:
             - inputScreens of shape (batch_size, seqLen, n_fm, h, w)
-            - inputVariables list of n_var tensors of shape (batchSize, seqLen)
+            - inputVariables list of numVariables tensors of shape (batchSize, seqLen)
         """
         batchSize = inputScreens.size(0)
         seqLength = inputScreens.size(1)
 
         # We're doing a batched forward through the network base
-        # Flattening seq_len into batch_size ensures that it will be applied
+        # Flattening seqLen into batch_size ensures that it will be applied
         # to all timesteps independently.
         state_input = self.base_forward(
             inputScreens.view(batchSize * seqLength, *inputScreens.size()[2:]),
@@ -182,11 +182,11 @@ class DQN(object):
         """
         Prepare inputs for evaluation.
         """
-        screens = np.float32([s.screen for s in last_states])
-        screens = self.get_var(torch.FloatTensor(screens))
+        screens = torch.stack([s.buffer.float() for s in last_states])
+        screens = self.get_var(screens)
 
-        variables = np.int64([s.variables for s in last_states])
-        variables = self.get_var(torch.LongTensor(variables))
+        variables = torch.stack([s.gameVars.long() for s in last_states])
+        variables = self.get_var(variables)
 
         return screens, variables
 
@@ -205,10 +205,9 @@ class DQN(object):
         return screens, variables, actions, rewards, isDone
 
     def next_action(self, last_states):
-        scores, pred_features = self.f_eval(last_states)
+        scores = self.f_eval(last_states)
         scores = scores[0, -1]
         action_id = scores.data.max(0)[1][0]
-        self.pred_features = pred_features
         return action_id
 
 class DQNRecurrent(DQN):

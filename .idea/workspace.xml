@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="edd34510-f8d6-4d80-a0f9-368ed5a11342" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< Updated upstream
       <change beforePath="$PROJECT_DIR$/MyCode/DOOM/Params.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/DOOM/Params.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyCode/_vizdoom.ini" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/_vizdoom.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyCode/doomMain.py" beforeDir="false" afterPath="$PROJECT_DIR$/MyCode/doomMain.py" afterDir="false" />
+=======
+>>>>>>> Stashed changes
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,6 +16,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+<<<<<<< Updated upstream
   <component name="FUSProjectUsageTrigger">
     <session id="1572149167">
       <usages-collector id="statistics.lifecycle.project">
@@ -68,11 +72,21 @@
                 <marker date="1543792543251" expanded="true" signature="2573:2578" ph="..." />
                 <marker date="1543792543251" expanded="true" signature="2573:4080" ph="..." />
               </folding>
+=======
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MyCode/CS7180Scenario.cfg">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+>>>>>>> Stashed changes
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+<<<<<<< Updated upstream
         <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/ModelMemory.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
@@ -94,11 +108,18 @@
                 <marker date="1543790071860" expanded="true" signature="8941:8950" ph="..." />
                 <marker date="1543790071860" expanded="true" signature="9054:9063" ph="..." />
               </folding>
+=======
+        <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/replay_memory.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+>>>>>>> Stashed changes
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+<<<<<<< Updated upstream
         <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/DQN.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="3157">
@@ -108,16 +129,30 @@
                 <marker date="1543790291777" expanded="true" signature="193:237" ph="..." />
                 <marker date="1543790291777" expanded="true" signature="320:325" ph="..." />
                 <marker date="1543790291777" expanded="true" signature="826:1759" ph="..." />
+=======
+        <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/base.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+>>>>>>> Stashed changes
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+<<<<<<< Updated upstream
         <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/trainer.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="703">
               <caret line="223" column="25" lean-forward="true" selection-start-line="223" selection-start-column="25" selection-end-line="223" selection-end-column="25" />
+=======
+        <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/recurrent.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="345">
+              <caret line="23" column="11" lean-forward="true" selection-start-line="23" selection-start-column="11" selection-end-line="23" selection-end-column="11" />
+>>>>>>> Stashed changes
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -126,6 +161,7 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+<<<<<<< Updated upstream
         <entry file="file://$PROJECT_DIR$/MyCode/DOOM/Params.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
@@ -133,6 +169,12 @@
               <folding>
                 <marker date="1543791017863" expanded="true" signature="781:786" ph="..." />
               </folding>
+=======
+        <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/bucketed_embedding.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+>>>>>>> Stashed changes
             </state>
           </provider>
         </entry>
@@ -175,6 +217,7 @@
         <option value="$PROJECT_DIR$/MyCode/RAINBOW/ModelMemory.py" />
         <option value="$PROJECT_DIR$/MyCode/RAINBOW/DQN.py" />
         <option value="$PROJECT_DIR$/MyCode/DOOM/Params.py" />
+<<<<<<< Updated upstream
         <option value="$PROJECT_DIR$/MyCode/doomMain.py" />
       </list>
     </option>
@@ -184,6 +227,21 @@
     <option name="y" value="59" />
     <option name="width" value="1402" />
     <option name="height" value="1020" />
+=======
+        <option value="$PROJECT_DIR$/MyCode/CS7180Scenario.cfg" />
+        <option value="$PROJECT_DIR$/scenarios/defend_the_line.cfg" />
+        <option value="$PROJECT_DIR$/ArnoldCopy/src/model/dqn/recurrent.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="221" />
+    <option name="width" value="1080" />
+    <option name="height" value="522" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+>>>>>>> Stashed changes
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -223,11 +281,14 @@
               <item name="model" type="462c0819:PsiDirectoryNode" />
               <item name="dqn" type="462c0819:PsiDirectoryNode" />
             </path>
+<<<<<<< Updated upstream
             <path>
               <item name="CS7180-Project" type="b2602c69:ProjectViewProjectNode" />
               <item name="CS7180-Project" type="462c0819:PsiDirectoryNode" />
               <item name="MyCode" type="462c0819:PsiDirectoryNode" />
             </path>
+=======
+>>>>>>> Stashed changes
           </expand>
           <select />
         </subPane>
@@ -236,12 +297,22 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+<<<<<<< Updated upstream
     <property name="last_opened_file_path" value="$USER_HOME$/Desktop/Fall 2018 Classes/CS7180" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/MyCode/RAINBOW" />
       <recent name="$PROJECT_DIR$/MyCode/DOOM" />
+=======
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../CS7180" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ArnoldCopy" />
+      <recent name="$PROJECT_DIR$/MyCode" />
+>>>>>>> Stashed changes
     </key>
   </component>
   <component name="RunDashboard">
@@ -301,7 +372,11 @@
     <frame x="325" y="59" width="1402" height="1020" extended-state="0" />
     <editor active="true" />
     <layout>
+<<<<<<< Updated upstream
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2501829" />
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12862414" />
+>>>>>>> Stashed changes
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info id="DB Browser" order="3" />
@@ -322,6 +397,7 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
+<<<<<<< Updated upstream
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
@@ -336,6 +412,8 @@
       </default-breakpoints>
     </breakpoint-manager>
   </component>
+=======
+>>>>>>> Stashed changes
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/MyCode/Hyperparams.ini" />
     <entry file="file://$PROJECT_DIR$/MyCode/CS7180Scenario.cfg">
@@ -359,6 +437,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< Updated upstream
     <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/doom/reward.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-47" />
@@ -368,6 +447,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
           <caret line="68" column="30" lean-forward="true" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="30" />
+=======
+    <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/DQN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="35" selection-start-line="32" selection-start-column="35" selection-end-line="32" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/python/learning_pytorch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="43" column="20" selection-start-line="43" selection-start-column="20" selection-end-line="43" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scenarios/multi_duel.cfg">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc/DoomGame.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="-2250" />
+          <second_editor />
+>>>>>>> Stashed changes
         </state>
       </provider>
     </entry>
@@ -406,6 +509,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< Updated upstream
     <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/Policies.py" />
     <entry file="file://$PROJECT_DIR$/MyCode/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
@@ -490,6 +594,50 @@
           <caret line="5" column="20" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
           <folding>
             <marker date="1543791017863" expanded="true" signature="781:786" ph="..." />
+=======
+    <entry file="file://$PROJECT_DIR$/scenarios/deathmatch.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="26" selection-start-line="26" selection-end-line="31" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scenarios/take_cover.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scenarios/defend_the_line.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="31" column="17" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/doom/game.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyCode/RAINBOW/Policies.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="14" column="29" selection-start-line="14" selection-start-column="29" selection-end-line="14" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <marker date="1541862404694" expanded="true" signature="118:411" ph="..." />
+            <marker date="1541862404694" expanded="true" signature="445:450" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="849">
+          <caret line="63" column="33" selection-start-line="63" selection-start-column="33" selection-end-line="63" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+>>>>>>> Stashed changes
           </folding>
         </state>
       </provider>
@@ -547,10 +695,40 @@
         </state>
       </provider>
     </entry>
+<<<<<<< Updated upstream
     <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/trainer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="703">
           <caret line="223" column="25" lean-forward="true" selection-start-line="223" selection-start-column="25" selection-end-line="223" selection-end-column="25" />
+=======
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/replay_memory.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/bucketed_embedding.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ArnoldCopy/src/model/dqn/recurrent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="11" lean-forward="true" selection-start-line="23" selection-start-column="11" selection-end-line="23" selection-end-column="11" />
+>>>>>>> Stashed changes
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>

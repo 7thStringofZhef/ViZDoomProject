@@ -5,7 +5,8 @@ import numpy as np
 
 Transition = namedtuple('Transition', ('timestep', 'state', 'action', 'reward', 'isDone'))
 GameState = namedtuple('State', ('buffer', 'gameVars'))
-blank_trans = Transition(0, GameState(torch.zeros(3, 60, 108, dtype=torch.uint8), [0., 0.]), None, 0, True)
+blank_trans = Transition(0, GameState(torch.zeros(3, 60, 108, dtype=torch.uint8),
+                                      torch.zeros(2, dtype=torch.float32)), None, 0, True)
 
 # For the beta value in the distribution
 class LinearSchedule(object):
@@ -98,7 +99,6 @@ class PrioritizedReplayMemory(object):
 
   # Adds state and action at time t, reward and terminal at time t + 1
     def append(self, state, action, reward, isDone):
-        state = state[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))  # Only store last frame and discretise to save memory
         self.transitions.append(Transition(self.t, state, action, reward, isDone), self.transitions.max)  # Store new transition with maximum priority
         self.t = 0 if isDone else self.t + 1  # Start new episodes with t = 0
 
@@ -131,15 +131,20 @@ class PrioritizedReplayMemory(object):
 
         # Retrieve all required transition data (from t - h to t + n)
         transition = self._get_transition(idx)
-        # Create un-discretised state and nth next state
-        state = torch.stack([trans.state for trans in transition[:self.history]]).to(dtype=torch.float32, device='cuda').div_(255)
-        next_state = torch.stack([trans.state for trans in transition[self.multiStepN:self.multiStepN + self.history]]).to(dtype=torch.float32, device='cuda').div_(255)
+
+        #Retrun GameState objects for each state
+        state = [trans.state for trans in transition[:self.history]]
+        next_state = [trans.state for trans in transition[self.multiStepN:self.multiStepN + self.history]]
+
         # Discrete action to be used as index
-        action = torch.Tensor([transition[self.history - 1].action], dtype=torch.int64, device='cuda')
+        action = torch.LongTensor([transition[self.history - 1].action]).cuda()
+
         # Calculate truncated n-step discounted return R^n = Σ_k=0->n-1 (γ^k)R_t+k+1 (note that invalid nth next states have reward 0)
-        R = torch.Tensor([sum(self.gamma ** n * transition[self.history + n - 1].reward for n in range(self.multiStepN))], dtype=torch.float32, device='cuda')
+        R = torch.FloatTensor([sum(self.gamma ** n * transition[self.history + n - 1].reward for n in range(self.multiStepN))]).cuda()
+
         # Mask for non-terminal nth next states
-        isDone = torch.Tensor([transition[self.history + self.multiStepN - 1].isDone], dtype=torch.float32, device='cuda')
+        isDone = torch.FloatTensor([transition[self.history + self.multiStepN - 1].isDone]).cuda()
+
         return prob, idx, tree_idx, state, action, R, next_state, isDone
 
     def sample(self, batch_size):
@@ -147,13 +152,13 @@ class PrioritizedReplayMemory(object):
         segment = p_total / batch_size  # Batch size number of segments, based on sum over all probabilities
         batch = [self._get_sample_from_segment(segment, i) for i in range(batch_size)]  # Get batch of valid samples
         probs, idxs, tree_idxs, states, actions, returns, next_states, isDones = zip(*batch)
-        states, next_states, = torch.stack(states), torch.stack(next_states)
-        actions, returns, nonterminals = torch.cat(actions), torch.cat(returns), torch.stack(isDones)
-        probs = np.array(probs, dtype=np.float32) / p_total # Calculate normalised probabilities
+        #states, next_states, = torch.stack(states), torch.stack(next_states)
+        #actions, returns, nonterminals = torch.cat(actions), torch.cat(returns), torch.stack(isDones)
+        probs = np.array(probs, dtype=np.float32) / p_total  # Calculate normalised probabilities
         capacity = self.capacity if self.transitions.full else self.transitions.index
         weights = (capacity * probs) ** -self.priority_weight  # Compute importance-sampling weights w
-        weights = torch.Tensor(weights / weights.max(), dtype=torch.float32, device=self.device)   # Normalise by max importance-sampling weight from batch
-        return tree_idxs, states, actions, returns, next_states, nonterminals, weights
+        weights = torch.FloatTensor(weights / weights.max()).cuda()  # Normalise by max importance-sampling weight from batch
+        return tree_idxs, states, actions, returns, next_states, isDones, weights
 
 
     def update_priorities(self, idxs, priorities):

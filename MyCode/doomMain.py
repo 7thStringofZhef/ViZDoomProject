@@ -8,9 +8,9 @@ import numpy.random as npr
 from collections import deque
 
 from vizdoom import DoomGame, Mode, ScreenFormat, ScreenResolution, GameVariable
-from DOOM.FrameProcessing import processImage
+from DOOM.FrameProcessing import processImage, gameStateToTensor
 from DOOM.Params import doomParams
-from RAINBOW.ModelMemory import PrioritizedReplayMemory, LinearSchedule, GameState
+from RAINBOW.ModelMemory import PrioritizedReplayMemory, LinearSchedule, GameState, blank_trans
 from RAINBOW.DQN import DQNRecurrent
 
 
@@ -47,17 +47,19 @@ class DoomGameEnv(object):
             reward += self.game.advance_action()
         is_done = self.game.is_episode_finished() or self.game.is_player_dead()
         newState = self.game.get_state()
-        processedState = GameState(newState.screen_buffer, newState.game_variables)
+        processedState = gameStateToTensor(newState)
         self.stateBuffer.append(processedState)
-        return self.stateBuffer, reward, is_done
+        return list(self.stateBuffer), reward, is_done
 
     def reset(self):
         self.game.new_episode()
+        # Start with a queue of all blank frames
         self.stateBuffer = deque([], maxlen=self.params.recurrenceHistory+1)
         newState = self.game.get_state()
-        processedState = GameState(newState.screen_buffer, newState.game_variables)
-        self.stateBuffer.append(processedState)
-        return processedState
+        processedState = gameStateToTensor(newState)
+        for i in range(self.params.recurrenceHistory+1):
+            self.stateBuffer.append(processedState)
+        return list(self.stateBuffer)
 
     def getEpisodeReward(self):
         return self.game.get_total_reward()
@@ -94,7 +96,7 @@ def train(env, params):
 
     # Anneal epsilon over time
     if not params.noisyLinear:
-        epsilon = LinearSchedule(params.epsSteps, params.endEps, params.startEps) # If using noisy linear layer, this doesn't applyS
+        epsilon = LinearSchedule(params.epsSteps, params.endEps, params.startEps)  # If using noisy linear layer, this doesn't applyS
     else:
         epsilon = None
 
@@ -105,7 +107,9 @@ def train(env, params):
     episodeRewards = list()
     episodeLengths = list()
 
+
     for episode in range(params.numEpisodes):
+        episodeFrameCounter = 0
         isDone = False
         currState = env.reset()
         while not isDone:
@@ -113,8 +117,14 @@ def train(env, params):
             if epsilon is not None and npr.randn() < epsilon.value(frameCounter):
                 action = npr.randint(0, env.numActions)
             else:
-                action = policyNet(currState).argmax(1).item()
+                action = policyNet.next_action(currState)
             pass
+            episodeFrameCounter += 1
+            frameCounter += 1
+
+        episodeRewards.append(env.getEpisodeReward())
+        episodeLengths.append(episodeFrameCounter)
+
 
 
 
