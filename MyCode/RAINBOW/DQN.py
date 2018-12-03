@@ -190,17 +190,18 @@ class DQN(object):
 
         return screens, variables
 
-    def prepare_f_train_args(self, screens, variables,
-                             actions, rewards, isDone):
+    def prepare_f_train_args(self, states, actions, rewards, isDones):
         """
         Prepare inputs for training.
         """
         # convert tensors to torch Variables
         # TODO remove the .copy below
-        screens = self.get_var(torch.FloatTensor(np.float32(screens).copy()))
-        variables = self.get_var(torch.LongTensor(np.int64(variables).copy()))
-        rewards = self.get_var(torch.FloatTensor(np.float32(rewards).copy()))
-        isDone = self.get_var(torch.FloatTensor(np.float32(isDone).copy()))
+        screens = torch.stack([torch.stack([s.buffer for s in state]) for state in states]).float()
+        variables = torch.stack([torch.stack([s.gameVars for s in state]) for state in states]).long()
+        screens = self.get_var(screens.clone())
+        variables = self.get_var(variables.clone())
+        rewards = self.get_var(torch.stack(list(rewards)).float().clone())
+        isDone = self.get_var(torch.stack(list(isDones)).float().clone())
 
         return screens, variables, actions, rewards, isDone
 
@@ -209,6 +210,13 @@ class DQN(object):
         scores = scores[0, -1]  # Q of last state in sequence
         action_id = scores.data.max(0)[1].item()
         return action_id
+
+    def resetNoise(self):
+        if self.params.noisyLinear:
+            self.module.Q.resetNoise()
+            if self.params.dueling:
+                self.module.V.resetNoise()
+
 
 class DQNRecurrent(DQN):
 
@@ -243,10 +251,10 @@ class DQNRecurrent(DQN):
         # do not return the recurrent state
         return output[0] # This is q-value
 
-    def f_train(self, screens, variables, actions, rewards, isDone):
+    def f_train(self, states, actions, rewards, isDone):
 
         screens, variables, actions, rewards, isDone = \
-            self.prepare_f_train_args(screens, variables, actions, rewards, isDone)
+            self.prepare_f_train_args(states, actions, rewards, isDone)
 
         batchSize = self.params.batchSize
         seqLength = self.histSize + self.params.numRecurrentUpdates
@@ -254,14 +262,14 @@ class DQNRecurrent(DQN):
         output = self.module(
             screens,
             [variables[:, :, i] for i in range(self.params.numGameVariables)],
-            prev_state=self.init_state_t
+            prevState=self.init_state_t
         )[0]
 
         # compute scores
         mask = torch.ByteTensor(output.size()).fill_(0)
         for i in range(batchSize):
             for j in range(seqLength - 1):
-                mask[i, j, int(actions[i, j])] = 1
+                mask[i, j, int(actions[i])] = 1
         scores1 = output.masked_select(self.get_var(mask))
         scores2 = rewards + (
             self.params.gamma * output[:, 1:, :].max(2)[0] * (1 - isDone)

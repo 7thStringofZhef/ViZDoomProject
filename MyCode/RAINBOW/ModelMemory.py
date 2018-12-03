@@ -89,7 +89,7 @@ class SegmentTree(object):
 class PrioritizedReplayMemory(object):
     def __init__(self, params):
         self.capacity = params.replayMemoryCapacity
-        self.history = params.recurrenceHistory
+        self.history = params.recurrenceHistory + params.numRecurrentUpdates
         self.gamma = params.gamma
         self.multiStepN = params.multiStep
         self.priority_weight = params.priorityBetaStart # Initial importance sampling weight β, annealed to 1 over course of training

@@ -6,6 +6,7 @@ from functools import partial
 import numpy as np
 import numpy.random as npr
 from collections import deque
+from time import time
 
 from vizdoom import DoomGame, Mode, ScreenFormat, ScreenResolution, GameVariable
 from DOOM.FrameProcessing import processImage, gameStateToTensor
@@ -70,8 +71,20 @@ def updateTargetNet(policyNet, targetNet):
     targetNet.module.load_state_dict(policyNet.module.state_dict())
 
 # Perform the update step on my policy network
-def optimizeNet(policyNet, targetNet, batch):
-    pass
+def optimizeNet(policyNet, targetNet, memory, params):
+    indices, states, actions, returns, nextStates, isDones, weights = memory.sample(params.batchSize)
+    policyNet.f_train(states, actions, returns, isDones)
+
+    # If using target Q
+    if params.double:
+        pass
+    else:
+        pass
+
+    # If using prioritized replay, update priorities
+    if params.prioritizedReplay:
+        memory.update
+
 
 def train(env, params):
     # Policy net
@@ -105,8 +118,10 @@ def train(env, params):
     optimFunction = torch.optim.Adam(policyNet.module.parameters(), lr=params.learningRate)
 
     frameCounter = 0
+    framesBeforeTraining = params.framesBeforeTraining  # Don't start training or annealing before this
     episodeRewards = list()
     episodeLengths = list()
+    episodeTimes = list()
 
 
     for episode in range(params.numEpisodes):
@@ -114,9 +129,14 @@ def train(env, params):
         episodeFrameCounter = 0
         isDone = False
         currState = env.reset()
+        startTime = time()
         while not isDone:
+            # If using noisy linear, reset noise on training frequency
+            if params.noisyLinear and frameCounter % params.trainingFrequency == 0:
+                policyNet.resetNoise()
+
             # Take action based on current state or on eps
-            if epsilon is not None and npr.randn() < epsilon.value(frameCounter):
+            if epsilon is not None and npr.rand() < epsilon.value(frameCounter-framesBeforeTraining):
                 action = npr.randint(0, env.numActions)
             else:
                 action = policyNet.next_action(currState)
@@ -124,10 +144,26 @@ def train(env, params):
             newState, reward, isDone = env.step(oneHotList(action, env.numActions))
             episodeFrameCounter += 1
             frameCounter += 1
+            memory.append(currState[-1], action, reward, isDone)  # Add last frame of game state
+            # Populate with random experiences first
+            if frameCounter > 4000:
+                # If it's time to train
+                if frameCounter % params.trainingFrequency == 0:
+                    optimizeNet(policyNet, targetNet, memory, params)
+
+                # If it's time to update target net
+                if params.double and frameCounter % params.targetUpdateFrequency == 0:
+                    updateTargetNet(policyNet, targetNet)
+
+
+
 
         print('Episode reward ' + str(env.getEpisodeReward()))
         episodeRewards.append(env.getEpisodeReward())
         episodeLengths.append(episodeFrameCounter)
+        episodeTimes.append(time()-startTime)
+
+    return episodeRewards, episodeLengths, episodeTimes
 
 
 
