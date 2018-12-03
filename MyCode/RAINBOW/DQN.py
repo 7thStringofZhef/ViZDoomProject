@@ -164,7 +164,7 @@ class DQN(object):
 
         # main module + loss functions
         self.module = self.DQNModuleClass(params)
-        self.lossFunction = nn.SmoothL1Loss()  # Huber
+        self.lossFunction = nn.SmoothL1Loss(reduction='none')  # Huber
 
         # cuda
         self.cuda = True
@@ -277,6 +277,7 @@ class DQNRecurrent(DQN):
                 self.params.gamma * output[:, 1:, :].max(2)[0] * (1 - isDone)
             )  # Get target Q
         else:
+            targetNet.resetNoise()
             targetNetOutput = targetNet.module(screens,
                                                [variables[:, :, i] for i in range(self.params.numGameVariables)],
                                                prevState=self.init_state_t

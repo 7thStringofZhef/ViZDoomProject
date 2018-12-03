@@ -73,23 +73,15 @@ def updateTargetNet(policyNet, targetNet):
 # Perform the update step on my policy network
 def optimizeNet(policyNet, targetNet, memory, optimizer, params):
     indices, states, actions, returns, nextStates, isDones, weights = memory.sample(params.batchSize)
-    loss = policyNet.f_train(states, actions, returns, isDones, targetNet)
+    loss = policyNet.f_train(states, actions, returns, isDones, targetNet)  # batchSize*numRecurrentUpdates
+    loss = (loss.transpose(0,1) * weights).transpose(0,1)  # Multiply by priority weights
     optimizer.zero_grad()
-    loss.backward()
+    loss.mean().backward()
     optimizer.step()
-
-
-    """
-    # If using target Q
-    if params.double:
-        pass
-    else:
-        pass
 
     # If using prioritized replay, update priorities
     if params.prioritizedReplay:
-        memory.update
-    """
+        memory.updatePriorities(indices, loss.detach().cpu().numpy()[:,-1])
 
 
 def train(env, params):

@@ -161,7 +161,7 @@ class PrioritizedReplayMemory(object):
         return tree_idxs, states, actions, returns, next_states, isDones, weights
 
 
-    def update_priorities(self, idxs, priorities):
+    def updatePriorities(self, idxs, priorities):
         priorities = np.power(priorities, self.priority_exponent)
         [self.transitions.update(idx, priority) for idx, priority in zip(idxs, priorities)]
 
