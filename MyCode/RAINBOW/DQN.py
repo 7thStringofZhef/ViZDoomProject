@@ -251,7 +251,7 @@ class DQNRecurrent(DQN):
         # do not return the recurrent state
         return output[0] # This is q-value
 
-    def f_train(self, states, actions, rewards, isDone):
+    def f_train(self, states, actions, rewards, isDone, targetNet=None):
 
         screens, variables, actions, rewards, isDone = \
             self.prepare_f_train_args(states, actions, rewards, isDone)
@@ -265,17 +265,28 @@ class DQNRecurrent(DQN):
             prevState=self.init_state_t
         )[0]
 
-        # compute scores
+        # compute scores on last
+        # output = output[:,-self.params.numRecurrentUpdates:,:]
         mask = torch.ByteTensor(output.size()).fill_(0)
         for i in range(batchSize):
             for j in range(seqLength - 1):
                 mask[i, j, int(actions[i])] = 1
-        scores1 = output.masked_select(self.get_var(mask))
-        scores2 = rewards + (
-            self.params.gamma * output[:, 1:, :].max(2)[0] * (1 - isDone)
-        )
+        scores1 = output.masked_select(self.get_var(mask))  # Get Q values  of selected actions
+        if targetNet is None:
+            scores2 = rewards + (
+                self.params.gamma * output[:, 1:, :].max(2)[0] * (1 - isDone)
+            )  # Get target Q
+        else:
+            targetNetOutput = targetNet.module(screens,
+                                               [variables[:, :, i] for i in range(self.params.numGameVariables)],
+                                               prevState=self.init_state_t
+                                               )[0]
+            scores2 = rewards + (
+                self.params.gamma * targetNetOutput[:, 1:, :].max(2)[0] * (1 - isDone)
+            )
 
-        # dqn loss
+
+        # dqn loss on last recurrent update states
         loss = self.lossFunction(
             scores1.view(batchSize, -1)[:, -self.params.numRecurrentUpdates:],
             torch.autograd.Variable(scores2.data[:, -self.params.numRecurrentUpdates:])

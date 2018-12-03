@@ -73,7 +73,7 @@ def updateTargetNet(policyNet, targetNet):
 # Perform the update step on my policy network
 def optimizeNet(policyNet, targetNet, memory, optimizer, params):
     indices, states, actions, returns, nextStates, isDones, weights = memory.sample(params.batchSize)
-    loss = policyNet.f_train(states, actions, returns, isDones)
+    loss = policyNet.f_train(states, actions, returns, isDones, targetNet)
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
