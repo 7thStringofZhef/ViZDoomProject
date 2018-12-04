@@ -31,12 +31,12 @@ class GameVariableEmbedding(nn.Embedding):
     def forward(self, indices):
         return super(GameVariableEmbedding, self).forward(indices.div(self.bucketSize))
 
-def buildGameVariableComponent(module, gameVars, gameVarBucketSizes, embeddingDim, gameVarNumValues=(101,101)):
+def buildGameVariableComponent(module, gameVars, gameVarBucketSizes, embeddingDim, gameVarNumValues=(201,101)):
     module.gameVariables = gameVars
     module.numGameVariables = len(gameVars)
     module.gameVariableEmbeddings = []
     names = ['health','bullets']
-    for i in range(len(gameVars)):  #101 and 101 should be num values?
+    for i in range(len(gameVars)):  #201 and 101 should be num values? Ammo 200-0, health 100-0
         embedding = GameVariableEmbedding(gameVarBucketSizes[i], gameVarNumValues[i], embeddingDim)
         setattr(module, '%s_emb' % names[i], embedding)
         module.gameVariableEmbeddings.append(embedding)

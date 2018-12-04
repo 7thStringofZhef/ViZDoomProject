@@ -237,7 +237,7 @@ if __name__ == "__main__":
     noMultiParams = doomParams(1, 1, 1, 1, 1)
     rainbowParams = doomParams()
 
-    paramList = [bareParams, noPriorityParams, noNoisyParams, noDuelingParams, noDoubleParams, noMultiParams, rainbowParams]
+    paramList = [bareParams, rainbowParams, noPriorityParams, noNoisyParams, noDuelingParams, noDoubleParams, noMultiParams]
 
     for index, paramSet in enumerate(paramList):
         torch.cuda.empty_cache()  # make sure GPU memory is empty
