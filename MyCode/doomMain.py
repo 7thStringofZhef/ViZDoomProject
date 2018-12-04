@@ -6,6 +6,7 @@ import numpy as np
 import numpy.random as npr
 from collections import deque
 from time import time
+from copy import deepcopy
 
 from vizdoom import DoomGame, Mode, ScreenFormat, ScreenResolution, GameVariable
 from DOOM.FrameProcessing import processImage, gameStateToTensor
@@ -144,6 +145,7 @@ def train(env, params):
     evalEpisodeLengths = list()  # For running in eval mode
     episodeTimes = list()
     episodeCounter = 1
+    framesBetweenSaves = 200000
 
 
     while frameCounter < params.numFrames:
@@ -153,6 +155,13 @@ def train(env, params):
         currState = env.reset()
         startTime = time()
         while not isDone:
+
+            # Periodically save
+            if frameCounter % framesBetweenSaves == 0:
+                try:
+                    saveResults(str(9), episodeRewards, episodeLengths, episodeTimes, evalEpisodeRewards, evalEpisodeLengths, policyNet)
+                except:
+                    pass
 
             # Periodically test in eval mode
             if frameCounter % params.framesBetweenEvaluations == 0:
@@ -180,6 +189,7 @@ def train(env, params):
             episodeFrameCounter += 1
             frameCounter += 1
             memory.append(currState[-1], action, reward, isDone)  # Add last frame of game state
+            currState = deepcopy(newState)  # Change to next state
             # Populate with random experiences first
             if frameCounter > framesBeforeTraining:
                 # If it's time to train
@@ -199,7 +209,7 @@ def train(env, params):
         episodeRewards.append(env.getEpisodeReward())
         episodeLengths.append(episodeFrameCounter)
         episodeTimes.append(time()-startTime)
-        episodeCounter+=1
+        episodeCounter += 1
 
     return episodeRewards, episodeLengths, episodeTimes, evalEpisodeRewards, evalEpisodeLengths, policyNet
 
