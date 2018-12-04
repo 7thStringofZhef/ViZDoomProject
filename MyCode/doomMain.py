@@ -89,16 +89,17 @@ def evalEpisode(env, policyNet, numEpisodes=10):
     policyNet.module.eval()
     episodeReturns = np.zeros(numEpisodes)
     episodeLengths = np.zeros(numEpisodes)
-    for episode in range(numEpisodes):
-        episodeFrameCounter = 0
-        isDone = False
-        currentState = env.reset()
-        while not isDone:
-            action = policyNet.next_action(currentState)
-            newState, reward, isDone = env.step(oneHotList(action, env.numActions))
-            episodeFrameCounter+=1
-        episodeReturns[episode] = env.getEpisodeReward()
-        episodeLengths[episode] = episodeFrameCounter
+    with torch.no_grad():
+        for episode in range(numEpisodes):
+            episodeFrameCounter = 0
+            isDone = False
+            currentState = env.reset()
+            while not isDone:
+                action = policyNet.next_action(currentState)
+                newState, reward, isDone = env.step(oneHotList(action, env.numActions))
+                episodeFrameCounter+=1
+            episodeReturns[episode] = env.getEpisodeReward()
+            episodeLengths[episode] = episodeFrameCounter
 
     policyNet.module.train()
     return np.mean(episodeReturns), np.mean(episodeLengths)
@@ -183,7 +184,8 @@ def train(env, params):
             if epsilon is not None and npr.rand() < epsilon.value(trainingFrameCounter):
                 action = npr.randint(0, env.numActions)
             else:
-                action = policyNet.next_action(currState)
+                with torch.no_grad():
+                    action = policyNet.next_action(currState)
 
             newState, reward, isDone = env.step(oneHotList(action, env.numActions))
             episodeFrameCounter += 1
@@ -238,6 +240,7 @@ if __name__ == "__main__":
     paramList = [bareParams, noPriorityParams, noNoisyParams, noDuelingParams, noDoubleParams, noMultiParams, rainbowParams]
 
     for index, paramSet in enumerate(paramList):
+        torch.cuda.empty_cache()  # make sure GPU memory is empty
         gameEnv = DoomGameEnv(paramSet)
         rewards, lengths, times, evalRewards, evalLengths, model = train(gameEnv, paramSet)
         saveResults(str(index), rewards, lengths, times, evalRewards, evalLengths, model)
