@@ -12,7 +12,7 @@ from DOOM.FrameProcessing import processImage, gameStateToTensor
 from DOOM.Params import doomParams
 from RAINBOW.ModelMemory import PrioritizedReplayMemory, LinearSchedule, GameState, blank_trans
 from RAINBOW.DQN import DQNRecurrent
-
+resultsPath = os.path.join(os.getcwd(), 'Results')
 
 def initGameWithParams(configFilePath):
     game = DoomGame()
@@ -83,6 +83,26 @@ def optimizeNet(policyNet, targetNet, memory, optimizer, params):
     if params.prioritizedReplay:
         memory.updatePriorities(indices, loss.detach().cpu().numpy()[:, -1])
 
+# Evaluate on episodes
+def evalEpisode(env, policyNet, numEpisodes=10):
+    policyNet.module.eval()
+    episodeReturns = np.zeros(numEpisodes)
+    episodeLengths = np.zeros(numEpisodes)
+    for episode in range(numEpisodes):
+        episodeFrameCounter = 0
+        isDone = False
+        currentState = env.reset()
+        while not isDone:
+            action = policyNet.next_action(currentState)
+            newState, reward, isDone = env.step(oneHotList(action, env.numActions))
+            episodeFrameCounter+=1
+        episodeReturns[episode] = env.getEpisodeReward()
+        episodeLengths[episode] = episodeFrameCounter
+
+    policyNet.module.train()
+    return np.mean(episodeReturns), np.mean(episodeLengths)
+
+
 
 def train(env, params):
     # Policy net
@@ -119,7 +139,9 @@ def train(env, params):
     framesBeforeTraining = params.framesBeforeTraining  # Don't start training or annealing before this
     trainingFrameCounter = 0
     episodeRewards = list()
+    evalEpisodeRewards = list()  # For running in eval mode
     episodeLengths = list()
+    evalEpisodeLengths = list()  # For running in eval mode
     episodeTimes = list()
 
 
@@ -130,6 +152,18 @@ def train(env, params):
         currState = env.reset()
         startTime = time()
         while not isDone:
+
+            # Periodically test in eval mode
+            if frameCounter % params.framesBetweenEvaluations == 0:
+                evalReward, evalLength = evalEpisode(env, policyNet)
+                evalEpisodeRewards.append(evalReward)
+                evalEpisodeLengths.append(evalLength)
+                # Start a new episode afterward
+                episodeFrameCounter = 0
+                isDone = False
+                currState = env.reset()
+                startTime = time()
+
             # If using noisy linear, reset noise on training frequency
             if params.noisyLinear and frameCounter % params.trainingFrequency == 0:
                 policyNet.resetNoise()
@@ -160,15 +194,11 @@ def train(env, params):
 
                 trainingFrameCounter += 1
 
-
-
-
-        print('Episode reward ' + str(env.getEpisodeReward()))
         episodeRewards.append(env.getEpisodeReward())
         episodeLengths.append(episodeFrameCounter)
         episodeTimes.append(time()-startTime)
 
-    return episodeRewards, episodeLengths, episodeTimes, policyNet
+    return episodeRewards, episodeLengths, episodeTimes, evalEpisodeRewards, evalEpisodeLengths, policyNet
 
 
 
@@ -177,13 +207,25 @@ def oneHotList(action, numActions):
     oneHot[action] = 1
     return oneHot
 
+def saveResults(indexStr, rewards, lengths, times, evalRewards, evalLengths, model):
+    np.savez(os.path.join(resultsPath, indexStr+'results.npz'), rewards=rewards, lengths=lengths, times=times, evalRewards=evalRewards, evalLengths=evalLengths)
+    torch.save(model.module.state_dict(), os.path.join(resultsPath, 'model.pth'))
 
 
 
 if __name__ == "__main__":
-    resultsPath = os.path.join(os.getcwd(), 'Results')
-    gameEnv = DoomGameEnv()
-    rewards, lengths, times, model = train(gameEnv, doomParams)
+    bareParams = doomParams(0, 0, 0, 0, 1)
+    noPriorityParams = doomParams(0)
+    noNoisyParams = doomParams(1, 0)
+    noDuelingParams = doomParams(1, 1, 0)
+    noDoubleParams = doomParams(1, 1, 1, 0)
+    noMultiParams = doomParams(1, 1, 1, 1, 1)
+    rainbowParams = doomParams()
 
-    torch.save(model.module.state_dict(), '')
+    paramList = [bareParams, noPriorityParams, noNoisyParams, noDuelingParams, noDoubleParams, noMultiParams, rainbowParams]
+
+    for index, paramSet in enumerate(paramList):
+        gameEnv = DoomGameEnv(paramSet)
+        rewards, lengths, times, evalRewards, evalLengths, model = train(gameEnv, paramSet)
+        saveResults(str(index), rewards, lengths, times, evalRewards, evalLengths, model)
 

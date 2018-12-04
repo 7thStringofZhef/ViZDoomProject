@@ -3,7 +3,8 @@ from vizdoom import GameVariable
 
 class doomParams(object):
     scenarioPath='CS7180Scenario.cfg'
-    numEpisodes=3000
+    numEpisodes=6000
+    framesBetweenEvaluations=50000
 
     #RAINBOW COMPONENTS
     prioritizedReplay = 1
@@ -43,5 +44,12 @@ class doomParams(object):
     gameVariables=[GameVariable.AMMO2, GameVariable.HEALTH]
     gameVariableBucketSizes=[1, 1]
     numGameVariables=2
+
+    def __init__(self, prioritizedReplay=1, noisyLinear=1, dueling=1, double=1, multiStep=3):
+        self.prioritizedReplay = prioritizedReplay
+        self.noisyLinear = noisyLinear
+        self.dueling = dueling
+        self.double = double
+        self.multiStep = multiStep
 
 
