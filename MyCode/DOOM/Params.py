@@ -3,7 +3,7 @@ from vizdoom import GameVariable
 
 class doomParams(object):
     scenarioPath='CS7180Scenario.cfg'
-    numEpisodes=6000
+    numFrames=2000000
     framesBetweenEvaluations=50000
 
     #RAINBOW COMPONENTS

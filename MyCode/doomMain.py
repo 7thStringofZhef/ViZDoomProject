@@ -143,10 +143,11 @@ def train(env, params):
     episodeLengths = list()
     evalEpisodeLengths = list()  # For running in eval mode
     episodeTimes = list()
+    episodeCounter = 1
 
 
-    for episode in range(params.numEpisodes):
-        print('Starting episode ' + str(episode+1))
+    while frameCounter < params.numFrames:
+        print('Starting episode ' + str(episodeCounter))
         episodeFrameCounter = 0
         isDone = False
         currState = env.reset()
@@ -155,6 +156,7 @@ def train(env, params):
 
             # Periodically test in eval mode
             if frameCounter % params.framesBetweenEvaluations == 0:
+                print('Evaluating')
                 evalReward, evalLength = evalEpisode(env, policyNet)
                 evalEpisodeRewards.append(evalReward)
                 evalEpisodeLengths.append(evalLength)
@@ -197,6 +199,7 @@ def train(env, params):
         episodeRewards.append(env.getEpisodeReward())
         episodeLengths.append(episodeFrameCounter)
         episodeTimes.append(time()-startTime)
+        episodeCounter+=1
 
     return episodeRewards, episodeLengths, episodeTimes, evalEpisodeRewards, evalEpisodeLengths, policyNet
 
