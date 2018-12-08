@@ -25,7 +25,7 @@ class doomParams(object):
     gamma=0.99
     batchSize=32
     frameskip=2
-    framesBeforeTraining=10000
+    framesBeforeTraining=80000
     learningRate=0.001
     recurrenceHistory=4
     trainingFrequency=4
