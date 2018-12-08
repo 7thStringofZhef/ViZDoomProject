@@ -69,6 +69,7 @@ if __name__=="__main__":
 
     for params in paramList:
         try:
+            torch.cuda.empty_cache()
             print(params.modelName)
             env = VizDoomEnv(params)
             agent = RainbowAgent(params)
@@ -120,6 +121,7 @@ if __name__=="__main__":
 
             # Final save
             save(agent, episodeRewards, evalRewards, evalRewardFrames)
+            env.game.close()
             # agent.save_replay()
         except:
             continue #  If some ablation fails, just keep going
