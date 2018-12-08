@@ -5,6 +5,9 @@ class doomParams(object):
     scenarioPath='CS7180Scenario.cfg'
     numFrames=2000000
     framesBetweenEvaluations=50000
+    framesBetweenSaves=100000
+
+    modelName="Test"
 
     #RAINBOW COMPONENTS
     prioritizedReplay = 1
@@ -21,8 +24,8 @@ class doomParams(object):
     epsSteps=100000
     gamma=0.99
     batchSize=32
-    frameskip=4
-    framesBeforeTraining=80000
+    frameskip=2
+    framesBeforeTraining=1000
     learningRate=0.001
     recurrenceHistory=4
     trainingFrequency=4
@@ -40,19 +43,20 @@ class doomParams(object):
     vMax = 10
 
     #Other
-    replayMemoryCapacity=250000
+    replayMemoryCapacity=500000
     inputShape = (3, 60, 108)  # Channels*height*width
     hiddenDimensions = 512
     gameVariables=[GameVariable.AMMO2, GameVariable.HEALTH]
     gameVariableBucketSizes=[1, 1]
     numGameVariables=2
 
-    def __init__(self, prioritizedReplay=1, noisyLinear=1, dueling=1, double=1, multiStep=3, distributed=1):
+    def __init__(self, modelName, prioritizedReplay=1, noisyLinear=1, dueling=1, double=1, multiStep=3, distributed=1):
         self.prioritizedReplay = prioritizedReplay
         self.noisyLinear = noisyLinear
         self.dueling = dueling
         self.double = double
         self.multiStep = multiStep
         self.distributed = distributed
+        self.modelName = modelName
 
 

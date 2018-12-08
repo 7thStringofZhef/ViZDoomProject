@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import numpy.random as npr
+import random
 import operator
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -101,7 +102,7 @@ class ExperienceReplayMemory:
             del self.memory[0]
 
     def sample(self, batch_size):
-        return npr.choice(self.memory, batch_size), None, None
+        return random.sample(self.memory, batch_size), None, None
 
     def __len__(self):
         return len(self.memory)

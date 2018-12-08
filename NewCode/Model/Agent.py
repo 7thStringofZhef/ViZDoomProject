@@ -65,18 +65,19 @@ class BaseAgent(object):
         self.losses = []
         self.rewards = []
         self.sigma_parameter_mag = []
+        self.name = "Temp"
 
     def huber(self, x):
         cond = (x.abs() < 1.0).float().detach()
         return 0.5 * x.pow(2) * cond + (x.abs() - 0.5) * (1.0 - cond)
 
     def save_w(self):
-        torch.save(self.model.state_dict(), './saved_agents/model.dump')
-        torch.save(self.optimizer.state_dict(), './saved_agents/optim.dump')
+        torch.save(self.model.state_dict(), './saved_agents/'+self.name+'model.dump')
+        torch.save(self.optimizer.state_dict(), './saved_agents/'+self.name+'optim.dump')
 
     def load_w(self):
-        fname_model = "./saved_agents/model.dump"
-        fname_optim = "./saved_agents/optim.dump"
+        fname_model = "./saved_agents/"+self.name+"model.dump"
+        fname_optim = "./saved_agents/"+self.name+"optim.dump"
 
         if os.path.isfile(fname_model):
             self.model.load_state_dict(torch.load(fname_model))
@@ -87,10 +88,10 @@ class BaseAgent(object):
             self.optimizer.load_state_dict(torch.load(fname_optim))
 
     def save_replay(self):
-        pickle.dump(self.memory, open('./saved_agents/exp_replay_agent.dump', 'wb'))
+        pickle.dump(self.memory, open('./saved_agents/'+self.name+'exp_replay_agent.dump', 'wb'))
 
     def load_replay(self):
-        fname = './saved_agents/exp_replay_agent.dump'
+        fname = './saved_agents/'+self.name+'exp_replay_agent.dump'
         if os.path.isfile(fname):
             self.memory = pickle.load(open(fname, 'rb'))
 
@@ -98,7 +99,7 @@ class BaseAgent(object):
         tmp = []
         for name, param in self.model.named_parameters():
             if param.requires_grad:
-                if 'sigma' in name:
+                if 'Sigma' in name:
                     tmp += param.data.cpu().numpy().ravel().tolist()
         if tmp:
             self.sigma_parameter_mag.append(np.mean(np.abs(np.array(tmp))))
@@ -106,14 +107,21 @@ class BaseAgent(object):
     def save_loss(self, loss):
         self.losses.append(loss)
 
+    def getLosses(self):
+        return self.losses
+
     def save_reward(self, reward):
         self.rewards.append(reward)
+
+    def getRewards(self):
+        return self.rewards
 
 
 class RainbowAgent(BaseAgent):
     def __init__(self, params, env=None):
         super(RainbowAgent, self).__init__()
         self.params = params
+        self.name = params.modelName
         self.device = device
 
         self.noisy = params.noisyLinear
@@ -313,20 +321,22 @@ class RainbowAgent(BaseAgent):
         if frame < self.learn_start:
             return None
 
-        batch_vars = self.prep_minibatch()
+        # Train if it's time to train
+        if frame % self.params.trainingFrequency == 0:
+            batch_vars = self.prep_minibatch()
 
-        loss = self.compute_loss(batch_vars)
+            loss = self.compute_loss(batch_vars)
 
-        # Optimize the model
-        self.optimizer.zero_grad()
-        loss.backward()
-        for param in self.model.parameters():
-            param.grad.data.clamp_(-1, 1)
-        self.optimizer.step()
+            # Optimize the model
+            self.optimizer.zero_grad()
+            loss.backward()
+            for param in self.model.parameters():
+                param.grad.data.clamp_(-1, 1)
+            self.optimizer.step()
 
-        self.update_target_model()
-        self.save_loss(loss.item())
-        self.save_sigma_param_magnitudes()
+            self.update_target_model()
+            self.save_loss(loss.item())
+            self.save_sigma_param_magnitudes()
 
     # Following epsGreedy policy (or not with noisy linear), get action
     def get_action(self, s):
@@ -374,7 +384,7 @@ class RainbowAgent(BaseAgent):
         next_dist = self.model(next_states) * self.supports
         return next_dist.sum(dim=2).max(1)[1].view(next_states.size(0), 1, 1).expand(-1, -1, self.atoms)
 
-    # Calculate return for n steps rather than just 1
+    # At end of episode, get the last n step return and append to memory
     def finish_nstep(self):
         while len(self.nstep_buffer) > 0:
             R = sum([self.nstep_buffer[i][2] * (self.gamma ** i) for i in range(len(self.nstep_buffer))])

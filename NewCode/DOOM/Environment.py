@@ -40,11 +40,12 @@ class VizDoomEnv(gym.Env):
         reward = self.game.make_action(list(action), self.frameskip)
         state = self.game.get_state()
         done = self.game.is_episode_finished()
-        info = state.game_variables  # Return the chosen game variables in info
         if state is not None:
             observation = state.screen_buffer
+            info = state.game_variables  # Return the chosen game variables in info
         else:
             observation = np.zeros(shape=self.observation_space.shape, dtype=np.uint8)
+            info = None
         processedObservation = self._preProcessImage(observation)
         return processedObservation, reward, done, info
 
@@ -60,7 +61,7 @@ class VizDoomEnv(gym.Env):
 
     def reset(self):
         self.game.new_episode()
-        return self.game.get_state().screen_buffer
+        return self._preProcessImage(self.game.get_state().screen_buffer)
 
     def render(self, mode='human', close=False):
         if close:
