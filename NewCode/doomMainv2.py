@@ -20,7 +20,7 @@ if __name__=="__main__":
                  noMultiParams, noDistributedParams]
 
     for params in paramList:
-        testAgent = RainbowAgent(params)
+        testEnv = VizDoomEnv(params)
 
 """
     for params in paramList:
