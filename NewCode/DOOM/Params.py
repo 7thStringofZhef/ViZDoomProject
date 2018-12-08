@@ -33,7 +33,7 @@ class doomParams(object):
     noisyParam=0.5
     priorityBetaStart=0.4
     priorityBetaEnd=1
-    priorityBetaSteps=200000
+    priorityBetaSteps=1000000
     priorityOmega=0.5
     atoms = 51
     vMin = -10
