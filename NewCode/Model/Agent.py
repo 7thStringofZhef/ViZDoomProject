@@ -190,6 +190,7 @@ class RainbowAgent(BaseAgent):
 
         self.memory.push((state, action, R, s_))
 
+    # Prepare a batch from memory for training
     def prep_minibatch(self):
         # random transition batch is taken from experience replay memory
         transitions, indices, weights = self.memory.sample(self.batchSize)
@@ -214,7 +215,45 @@ class RainbowAgent(BaseAgent):
 
         return batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights
 
+    # For distributed. Calculate distribution across Q-values
+    def projection_distribution(self, batch_vars):
+        batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
+
+        with torch.no_grad():
+            max_next_dist = torch.zeros((self.batchSize, 1, self.atoms), device=self.device,
+                                        dtype=torch.float) + 1. / self.atoms
+            if not empty_next_state_values:
+                max_next_action = self.get_max_next_state_action_dist(non_final_next_states)  # Best action next state
+                if self.target_model is not None:
+                    self.target_model.sample_noise()
+                    max_next_dist[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)  # From target model, dist values
+                else:
+                    self.model.sample_noise()
+                    max_next_dist[non_final_mask] = self.model(non_final_next_states).gather(1, max_next_action)
+                max_next_dist = max_next_dist.squeeze()
+
+            Tz = batch_reward.view(-1, 1) + (self.gamma ** self.nsteps) * self.supports.view(1, -1) * non_final_mask.to(
+                torch.float).view(-1, 1)
+            Tz = Tz.clamp(self.vMin, self.vMax)
+            b = (Tz - self.vMin) / self.delta
+            l = b.floor().to(torch.int64)
+            u = b.ceil().to(torch.int64)
+            l[(u > 0) * (l == u)] -= 1
+            u[(l < (self.atoms - 1)) * (l == u)] += 1
+
+            offset = torch.linspace(0, (self.batchSize - 1) * self.atoms, self.batchSize).unsqueeze(dim=1).expand(
+                self.batchSize, self.atoms).to(batch_action)
+            m = batch_state.new_zeros(self.batchSize, self.atoms)
+            m.view(-1).index_add_(0, (l + offset).view(-1),
+                                  (max_next_dist * (u.float() - b)).view(-1))  # m_l = m_l + p(s_t+n, a*)(u - b)
+            m.view(-1).index_add_(0, (u + offset).view(-1),
+                                  (max_next_dist * (b - l.float())).view(-1))  # m_u = m_u + p(s_t+n, a*)(b - l)
+
+        return m
+
     def compute_loss(self, batch_vars):
+        if self.params.distributed:
+            return self.compute_loss_dist(batch_vars)
         batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
 
         # estimate
@@ -226,8 +265,12 @@ class RainbowAgent(BaseAgent):
             max_next_q_values = torch.zeros(self.batchSize, device=self.device, dtype=torch.float).unsqueeze(dim=1)
             if not empty_next_state_values:
                 max_next_action = self.get_max_next_state_action(non_final_next_states)
-                self.target_model.sample_noise()
-                max_next_q_values[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)
+                if self.target_model is not None:
+                    self.target_model.sample_noise()
+                    max_next_q_values[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)
+                else:
+                    self.model.sample_noise()
+                    max_next_q_values[non_final_mask] = self.model(non_final_next_states).gather(1, max_next_action)
             expected_q_values = batch_reward + ((self.gamma ** self.nsteps) * max_next_q_values)
 
         diff = (expected_q_values - current_q_values)
@@ -240,12 +283,30 @@ class RainbowAgent(BaseAgent):
 
         return loss
 
-    def update(self, s, a, r, s_, frame=0):
-        if self.static_policy:
-            return None
+    def compute_loss_dist(self, batch_vars):
+        batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
 
+        batch_action = batch_action.unsqueeze(dim=-1).expand(-1, -1, self.atoms)
+        batch_reward = batch_reward.view(-1, 1, 1)
+
+        # estimate
+        self.model.sample_noise()
+        current_dist = self.model(batch_state).gather(1, batch_action).squeeze()
+
+        target_prob = self.projection_distribution(batch_vars)
+
+        loss = -(target_prob * current_dist.log()).sum(-1)
+        self.memory.update_priorities(indices, loss.detach().squeeze().abs().cpu().numpy().tolist())
+        loss = loss * weights
+        loss = loss.mean()
+
+        return loss
+
+    # Append experience to replay buffer
+    def update(self, s, a, r, s_, frame=0):
         self.append_to_replay(s, a, r, s_)
 
+        # If it's not time to start training, don't
         if frame < self.learn_start:
             return None
 
@@ -264,7 +325,10 @@ class RainbowAgent(BaseAgent):
         self.save_loss(loss.item())
         self.save_sigma_param_magnitudes()
 
+    # Following epsGreedy policy (or not with noisy linear), get action
     def get_action(self, s):
+        if self.params.distributed:
+            return self.get_action_dist(s)
         eps = self.epsSchedule.value(self.currFrame)
         with torch.no_grad():
             if np.random.random() >= eps or self.noisy:
@@ -275,15 +339,37 @@ class RainbowAgent(BaseAgent):
             else:
                 return np.random.randint(0, self.num_actions)
 
+    # As above, but for distribution
+    def get_action_dist(self, s):
+        eps = self.epsSchedule.value(self.currFrame)
+        with torch.no_grad():
+            if np.random.random() >= eps or self.noisy:
+                X = torch.tensor([s], device=self.device, dtype=torch.float)
+                self.model.sample_noise()
+                a = self.model(X) * self.supports
+                a = a.sum(dim=2).max(1)[1].view(1, 1)
+                return a.item()
+            else:
+                return np.random.randint(0, self.num_actions)
+
+
+    # Update target model according to frequency
     def update_target_model(self):
         self.update_count += 1
         self.update_count = self.update_count % self.targetUpdateFrequency
         if self.update_count == 0:
             self.target_model.load_state_dict(self.model.state_dict())
 
+    # Get best action (standard)
     def get_max_next_state_action(self, next_states):
-        return self.target_model(next_states).max(dim=1)[1].view(-1, 1)
+        return self.model(next_states).max(dim=1)[1].view(-1, 1)
 
+    # Get best action (distributed)
+    def get_max_next_state_action_dist(self, next_states):
+        next_dist = self.model(next_states) * self.supports
+        return next_dist.sum(dim=2).max(1)[1].view(next_states.size(0), 1, 1).expand(-1, -1, self.atoms)
+
+    # Calculate return for n steps rather than just 1
     def finish_nstep(self):
         while len(self.nstep_buffer) > 0:
             R = sum([self.nstep_buffer[i][2] * (self.gamma ** i) for i in range(len(self.nstep_buffer))])
@@ -294,12 +380,14 @@ class RainbowAgent(BaseAgent):
     def reset_hx(self):
         pass
 
+    # Set to eval
     def eval(self):
         self.evalMode = 1
         self.model.eval()
         if self.target_model is not None:
             self.target_model.eval()
 
+    # Set to train
     def train(self):
         self.evalMode = 0
         self.model.train()
