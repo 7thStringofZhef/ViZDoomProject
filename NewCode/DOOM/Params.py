@@ -12,8 +12,10 @@ class doomParams(object):
     dueling = 1
     double = 1
     multiStep = 3
+    distributed = 1
 
     #[NET PARAMS]
+    recurrent=1
     startEps=1.0
     endEps=0.1
     epsSteps=100000
@@ -24,10 +26,7 @@ class doomParams(object):
     learningRate=0.001
     recurrenceHistory=4
     trainingFrequency=4
-    numRecurrentUpdates=2
-    embeddingDim=32
     numActions=3
-    dropout=0.5
 
     #[RAINBOW PARAMS]
     targetUpdateFrequency=1000
@@ -36,6 +35,9 @@ class doomParams(object):
     priorityBetaEnd=1
     priorityBetaSteps=200000
     priorityOmega=0.5
+    atoms = 51
+    vMin = -10
+    vMax = 10
 
     #Other
     replayMemoryCapacity=250000

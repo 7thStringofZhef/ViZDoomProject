@@ -23,6 +23,7 @@ class VizDoomEnv(gym.Env):
         self.numGameVariables = len(self.gameVariables)
         self.action_space = spaces.MultiDiscrete([2] * self.game.get_available_buttons_size())
         self.action_space.dtype = 'uint8'
+        output_shape = (self.game.get_screen_channels(), self.game.get_screen_height(), self.game.get_screen_width())
         self.observation_space = spaces.Box(low=0, high=255, shape=output_shape, dtype='uint8')
         self.game.init()
 

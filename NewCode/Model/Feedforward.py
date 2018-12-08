@@ -36,7 +36,7 @@ class DQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
 
         self.body = body(self.inputShape)
 
@@ -64,7 +64,7 @@ class DuelingDQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.num_actions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
 
         self.body = body(self.inputShape)
 
@@ -104,7 +104,7 @@ class CategoricalDQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
         self.atoms = params.atoms
 
         self.body = body(self.inputShape)
@@ -135,7 +135,7 @@ class CategoricalDuelingDQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
         self.atoms = params.atoms
 
         self.body = body(self.inputShape)

@@ -13,7 +13,7 @@ class DRQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
         self.hiddenDimensions = params.hiddenDimensions
 
         self.body = body(self.inputShape)
@@ -50,7 +50,7 @@ class DuelingDRQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
         self.hiddenDimensions = params.hiddenDimensions
 
         self.body = body(self.inputShape)
@@ -92,7 +92,7 @@ class CategoricalDRQN(nn.Module):
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
         self.hiddenDimensions = params.hiddenDimensions
         self.atoms = params.atoms
 
@@ -124,13 +124,13 @@ class CategoricalDRQN(nn.Module):
             self.body.sample_noise()
             self.fc2.sample_noise()
 
-class DuelingCategoricalDRQN(nn.Module):
+class CategoricalDuelingDRQN(nn.Module):
     def __init__(self, params, body=DoomConvolutionalBody):
-        super(DuelingCategoricalDRQN, self).__init__()
+        super(CategoricalDuelingDRQN, self).__init__()
 
         self.inputShape = params.inputShape
         self.numActions = params.numActions
-        self.noisy = params.noisy
+        self.noisy = params.noisyLinear
         self.hiddenDimensions = params.hiddenDimensions
         self.atoms = params.atoms
 
