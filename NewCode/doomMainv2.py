@@ -67,7 +67,7 @@ if __name__=="__main__":
                   [0, 1, 0],
                   [0, 0, 1]]
 
-    for params in paramList[1:]:
+    for params in paramList:
         print(params.modelName)
         env = VizDoomEnv(params)
         agent = RainbowAgent(params)
@@ -83,6 +83,8 @@ if __name__=="__main__":
 
         while currentFrame <= params.numFrames:
             currentFrame += 1
+            if currentFrame == params.framesBeforeTraining:
+                print("Training starting...")
 
             # Evaluate periodically (takes noisy layer offline)
             if currentFrame >= nextEvalFrame:

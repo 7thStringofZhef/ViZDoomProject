@@ -20,12 +20,12 @@ class doomParams(object):
     #[NET PARAMS]
     recurrent=0
     startEps=1.0
-    endEps=0.1
-    epsSteps=100000
+    endEps=0.01
+    epsSteps=250000
     gamma=0.99
     batchSize=32
     frameskip=2
-    framesBeforeTraining=1000
+    framesBeforeTraining=80000
     learningRate=0.001
     recurrenceHistory=4
     trainingFrequency=4

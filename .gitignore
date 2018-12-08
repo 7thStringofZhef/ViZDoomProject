@@ -10,3 +10,5 @@ MyCode/__pycache__/
 MyCode/_vizdoom\.ini
 
 MyCode/Results/
+
+NewCode/saved_agents/
