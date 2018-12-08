@@ -111,17 +111,17 @@ class PrioritizedReplayMemory(object):
     def __init__(self, params):
         super(PrioritizedReplayMemory, self).__init__()
         self._storage = []
-        self._maxsize = params.size
+        self._maxsize = params.replayMemoryCapacity
         self._next_idx = 0
 
         self._alpha = params.priorityOmega
 
         self.beta_start = params.priorityBetaStart
-        self.beta_frames = params.priorityBetaStep
+        self.beta_frames = params.priorityBetaFrames
         self.frame = 1
 
         it_capacity = 1
-        while it_capacity < params.size:
+        while it_capacity < params.replayMemoryCapacity:
             it_capacity *= 2
 
         self._it_sum = SumSegmentTree(it_capacity)

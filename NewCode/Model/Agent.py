@@ -80,7 +80,8 @@ class BaseAgent(object):
 
         if os.path.isfile(fname_model):
             self.model.load_state_dict(torch.load(fname_model))
-            self.target_model.load_state_dict(self.model.state_dict())
+            if self.params.double:
+                self.target_model.load_state_dict(self.model.state_dict())
 
         if os.path.isfile(fname_optim):
             self.optimizer.load_state_dict(torch.load(fname_optim))
@@ -120,7 +121,7 @@ class RainbowAgent(BaseAgent):
 
         # Model parameters
         self.gamma = params.gamma
-        self.lr = params.lr
+        self.lr = params.learningRate
         self.targetUpdateFrequency = params.targetUpdateFrequency
         self.replayCapacity = params.replayMemoryCapacity
         self.batchSize = params.batchSize
@@ -142,16 +143,17 @@ class RainbowAgent(BaseAgent):
 
         self.declare_networks()  # Set up models depending on parameters
 
-        self.target_model.load_state_dict(self.model.state_dict())
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
 
         # move to correct device
         self.model = self.model.to(self.device)
-        self.target_model.to(self.device)
+        if self.params.double:
+            self.target_model.to(self.device)
 
         # Set to training mode
         self.model.train()
-        self.target_model.train()
+        if self.params.double:
+            self.target_model.train()
 
         self.update_count = 0
 
@@ -172,6 +174,7 @@ class RainbowAgent(BaseAgent):
         self.model = modelFn(self.params)
         if self.params.double:
             self.target_model = modelFn(self.params)
+            self.target_model.load_state_dict(self.model.state_dict())
         else:
             self.target_model = None
 
@@ -355,6 +358,8 @@ class RainbowAgent(BaseAgent):
 
     # Update target model according to frequency
     def update_target_model(self):
+        if not self.params.double:
+            return
         self.update_count += 1
         self.update_count = self.update_count % self.targetUpdateFrequency
         if self.update_count == 0:

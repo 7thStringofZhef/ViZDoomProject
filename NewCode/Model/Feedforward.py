@@ -63,7 +63,7 @@ class DuelingDQN(nn.Module):
         super(DuelingDQN, self).__init__()
 
         self.inputShape = params.inputShape
-        self.num_actions = params.numActions
+        self.numActions = params.numActions
         self.noisy = params.noisyLinear
 
         self.body = body(self.inputShape)

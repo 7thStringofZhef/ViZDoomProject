@@ -15,7 +15,7 @@ class doomParams(object):
     distributed = 1
 
     #[NET PARAMS]
-    recurrent=1
+    recurrent=0
     startEps=1.0
     endEps=0.1
     epsSteps=100000
@@ -33,7 +33,7 @@ class doomParams(object):
     noisyParam=0.5
     priorityBetaStart=0.4
     priorityBetaEnd=1
-    priorityBetaSteps=1000000
+    priorityBetaFrames=1000000
     priorityOmega=0.5
     atoms = 51
     vMin = -10
@@ -47,11 +47,12 @@ class doomParams(object):
     gameVariableBucketSizes=[1, 1]
     numGameVariables=2
 
-    def __init__(self, prioritizedReplay=1, noisyLinear=1, dueling=1, double=1, multiStep=3):
+    def __init__(self, prioritizedReplay=1, noisyLinear=1, dueling=1, double=1, multiStep=3, distributed=1):
         self.prioritizedReplay = prioritizedReplay
         self.noisyLinear = noisyLinear
         self.dueling = dueling
         self.double = double
         self.multiStep = multiStep
+        self.distributed = distributed
 
 
