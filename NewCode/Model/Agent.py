@@ -145,9 +145,9 @@ class RainbowAgent(BaseAgent):
         self.supports = torch.linspace(self.vMin, self.vMax, self.atoms).view(1, 1, self.atoms).to(device)
         self.delta = (self.vMax - self.vMin) / (self.atoms - 1)
 
-        if self.recurrent:
+        if params.recurrent:  # Feed frames one at a time
             self.num_feats = params.inputShape
-        else: # Stack frames
+        else:  # Stack frames
             self.num_feats = (params.inputShape[0]*params.sequenceLength, params.inputShape[1], params.inputShape[2])
         self.num_actions = params.numActions
         self.env = env
@@ -171,6 +171,7 @@ class RainbowAgent(BaseAgent):
         # Create replay memory
         self.declare_memory()
 
+        # To calculate n-step returns
         self.nsteps = params.multiStep
         self.nstep_buffer = []
 
@@ -182,6 +183,7 @@ class RainbowAgent(BaseAgent):
 
         # Sequence length
         self.sequence_length = params.sequenceLength
+
         if params.recurrent:
             self.reset_hx()
 
@@ -215,13 +217,21 @@ class RainbowAgent(BaseAgent):
 
     # Decompose a sequence of transitions into parsable info
     # If seqLen is 1, will look exactly right
+    #
     def decomposeSequence(self, transitions):
+        newTransitions = list()
         for batch in range(len(transitions)):
-            transitions[batch][0] = np.vstack(transitions[batch][0])  # Stack of states
-            transitions[batch][1] = transitions[batch][1][-1]  # Last action
-            transitions[batch][2] = transitions[batch][2][-1]  # Immediate reward after taking action given sequence
-            transitions[batch][3] = np.vstack(transitions[batch][3])  # Stack of next states
-        return transitions
+            newTransitions.append([])
+            newTransitions[-1].append(np.vstack([transitions[batch][seqIdx][0] for seqIdx in range(self.sequence_length)])) # Stack of states. Shouldn't be any Nones
+            newTransitions[-1].append(transitions[batch][-1][1])  # Last action
+            newTransitions[-1].append(transitions[batch][-1][2])  # Immediate reward after taking action given sequence
+            # Stack of next states. Could be Nones in there
+            nextStates = [transitions[batch][seqIdx][3] for seqIdx in range(self.sequence_length)]
+            if any(elem is None for elem in nextStates):
+                newTransitions[-1].append(None)  # Next state is done
+            else:
+                newTransitions[-1].append(np.vstack(nextStates))
+        return newTransitions
 
     # Prepare a batch from memory for training
     def prep_minibatch(self):

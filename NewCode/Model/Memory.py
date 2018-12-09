@@ -104,8 +104,10 @@ class ExperienceReplayMemory:
 
     def sample(self, batch_size):
         endIndices = npr.randint(self.seqLen-1, len(self.memory), batch_size)
-        indexSets = [np.arange(endIdx-self.seqLen-1, endIdx, dtype=np.int32) for endIdx in endIndices]
-        return [self.memory[indices] for indices in indexSets], None, None
+        # Stack frames here if needed
+        #for idx in endIndices:
+            #memorySegment = self.memory[idx-self.seqLen:idx]
+        return [self.memory[idx-self.seqLen:idx] for idx in endIndices], None, None
         # return random.sample(self.memory, batch_size), None, None
 
     def __len__(self):
@@ -150,7 +152,7 @@ class PrioritizedReplayMemory(object):
         self._it_min[idx] = self._max_priority ** self._alpha
 
     def _encode_sample(self, idxes):
-        return [[self._storage[i] for i in indexSet] for indexSet in idxes]
+        return [self._storage[i-self.seqLen:i] for i in idxes]
 
     def _sample_proportional(self, batch_size):
         res = []
@@ -159,7 +161,7 @@ class PrioritizedReplayMemory(object):
             while idx < self.seqLen-1:  # For stacked frames
                 mass = npr.random() * self._it_sum.sum(0, len(self._storage) - 1)
                 idx = self._it_sum.find_prefixsum_idx(mass)
-                res.append(np.arange(idx-self.seqLen-1, idx, dtype=np.int32))
+                res.append(idx)
         return res
 
     def sample(self, batch_size):
@@ -177,12 +179,12 @@ class PrioritizedReplayMemory(object):
         max_weight = (p_min * len(self._storage)) ** (-beta)
 
         for idx in idxes:
-            p_sample = self._it_sum[idx[-1]] / self._it_sum.sum()
+            p_sample = self._it_sum[idx] / self._it_sum.sum()
             weight = (p_sample * len(self._storage)) ** (-beta)
             weights.append(weight / max_weight)
         weights = torch.tensor(weights, device=device, dtype=torch.float)
         encoded_sample = self._encode_sample(idxes)
-        return encoded_sample, [indexSet[-1] for indexSet in idxes], weights
+        return encoded_sample, idxes, weights
 
     def update_priorities(self, idxes, priorities):
         for idx, priority in zip(idxes, priorities):

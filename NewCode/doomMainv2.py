@@ -17,7 +17,7 @@ def evalEpisodes(agent, env, numEpisodes=20):
     evalRewards = 0.0
     state = env.reset()
     for episode in range(numEpisodes):
-        action = agent.get_action(state)  # Get action
+        action = agent.get_action(np.vstack(state))  # Get action
         newState, reward, isDone, gameVars = env.step(actionList[action])  # Take a step
         evalRewards += reward  # Add reward from action
         state = deepcopy(newState)  # Copy just in case
@@ -99,12 +99,12 @@ if __name__=="__main__":
                 save(agent, episodeRewards, evalRewards, evalRewardFrames)
                 nextSaveFrame += params.framesBetweenSaves
 
-            action = agent.get_action(state)  # Get action
+            action = agent.get_action(np.vstack(state))  # Get action
             agent.currFrame += 1  # Update agent's counter
             newState, reward, isDone, gameVars = env.step(actionList[action])  # Take a step
             if isDone:
-                newState = None
-            agent.update(state, action, reward, newState, currentFrame)  # Add experience to memory, train
+                newState = [None]
+            agent.update(state[-1], action, reward, newState[-1], currentFrame)  # Add experience to memory, train
             currentEpisodeReward += reward  # Add reward from action
             state = deepcopy(newState)  # Copy just in case
 

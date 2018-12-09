@@ -4,6 +4,7 @@ import gym.spaces as spaces
 from gym.envs.classic_control import rendering
 from vizdoom import DoomGame
 import cv2
+from collections import deque
 
 class VizDoomEnv(gym.Env):
     '''
@@ -19,6 +20,8 @@ class VizDoomEnv(gym.Env):
         self._viewer = None
         self.frameskip = params.frameskip
         self.inputShape = params.inputShape
+        self.sequenceLength = params.sequenceLength
+        self.seqInputShape = (self.inputShape[0]*self.sequenceLength, self.inputShape[1], self.inputShape[2])
         self.gameVariables = params.gameVariables
         self.numGameVariables = len(self.gameVariables)
         self.action_space = spaces.MultiDiscrete([2] * self.game.get_available_buttons_size())
@@ -26,6 +29,9 @@ class VizDoomEnv(gym.Env):
         output_shape = (self.game.get_screen_channels(), self.game.get_screen_height(), self.game.get_screen_width())
         self.observation_space = spaces.Box(low=0, high=255, shape=output_shape, dtype='uint8')
         self.game.init()
+
+        # Maintain a buffer of last seq len frames.
+        self.frameBuffer = [np.zeros(self.inputShape)]*self.sequenceLength
 
     def close(self):
         self.game.close()
@@ -47,7 +53,9 @@ class VizDoomEnv(gym.Env):
             observation = np.zeros(shape=self.observation_space.shape, dtype=np.uint8)
             info = None
         processedObservation = self._preProcessImage(observation)
-        return processedObservation, reward, done, info
+        del self.frameBuffer[0]
+        self.frameBuffer.append(processedObservation)
+        return self.frameBuffer, reward, done, info
 
     # Preprocess image for use in network
     def _preProcessImage(self, image):
@@ -61,7 +69,10 @@ class VizDoomEnv(gym.Env):
 
     def reset(self):
         self.game.new_episode()
-        return self._preProcessImage(self.game.get_state().screen_buffer)
+        state = self._preProcessImage(self.game.get_state().screen_buffer)
+        self.frameBuffer = [state]*self.sequenceLength
+        return self.frameBuffer
+
 
     def render(self, mode='human', close=False):
         if close:
