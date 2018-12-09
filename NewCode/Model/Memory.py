@@ -260,7 +260,7 @@ class RecurrentPrioritizedReplayMemory(object):
         self._it_min[idx] = self._max_priority ** self._alpha
 
     def _encode_sample(self, idxes):
-        return [self._storage[i] for i in idxes]
+        return [[self._storage[i] for i in innerIdxes] for innerIdxes in idxes]
 
     def _sample_proportional(self, batch_size):
         res = []
@@ -270,8 +270,26 @@ class RecurrentPrioritizedReplayMemory(object):
             res.append(idx)
         return res
 
+    # Only weight the indices of the last frame in each experience
     def sample(self, batch_size):
         idxes = self._sample_proportional(batch_size)
+        beginIndices = [idx - self.seqLen for idx in idxes]
+        samp = []
+        for start, end in zip(beginIndices, idxes):
+            # correct for sampling near beginning
+            final = self._storage[max(start + 1, 0):end + 1]
+
+            # correct for sampling across episodes
+            for i in range(len(final) - 2, -1, -1):
+                if final[i][3] is None:
+                    final = final[i + 1:]
+                    break
+
+            # pad beginning to account for corrections
+            while (len(final) < self.seqLen):
+                final = [(np.zeros_like(self._storage[0][0]), 0, 0, np.zeros_like(self._storage[0][3]))] + final
+
+            samp += final
 
         weights = []
 
@@ -289,7 +307,7 @@ class RecurrentPrioritizedReplayMemory(object):
             weight = (p_sample * len(self._storage)) ** (-beta)
             weights.append(weight / max_weight)
         weights = torch.tensor(weights, device=device, dtype=torch.float)
-        encoded_sample = self._encode_sample(idxes)
+        encoded_sample = samp
         return encoded_sample, idxes, weights
 
     def update_priorities(self, idxes, priorities):
@@ -298,3 +316,5 @@ class RecurrentPrioritizedReplayMemory(object):
             self._it_sum[idx] = (priority + 1e-5) ** self._alpha
             self._it_min[idx] = (priority + 1e-5) ** self._alpha
             self._max_priority = max(self._max_priority, (priority + 1e-5))
+
+
