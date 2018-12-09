@@ -8,7 +8,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 from .Feedforward import *
 from .Recurrent import *
-from .Memory import ExperienceReplayMemory, PrioritizedReplayMemory
+from .Memory import ExperienceReplayMemory, PrioritizedReplayMemory, RecurrentExperienceReplayMemory
 
 # Map params to specific model
 def chooseModel(params):
@@ -187,8 +187,11 @@ class RainbowAgent(BaseAgent):
             self.target_model = None
 
     def declare_memory(self):
-        self.memory = ExperienceReplayMemory(self.params) if not self.priorityReplay \
-            else PrioritizedReplayMemory(self.params)
+        if not self.recurrent:
+            self.memory = ExperienceReplayMemory(self.params) if not self.priorityReplay \
+                else PrioritizedReplayMemory(self.params)
+        else:
+            self.memory = RecurrentExperienceReplayMemory(self.params)
 
     def append_to_replay(self, s, a, r, s_):
         self.nstep_buffer.append((s, a, r, s_))
