@@ -7,10 +7,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Note that for recurrent, inputShape[0] will be histSize*numChannels instead of just numChannels
 class DoomConvolutionalBody(nn.Module):
-    def __init__(self, inputShape):
+    def __init__(self, inputShape, seqLen=1):
         super(DoomConvolutionalBody, self).__init__()
 
-        self.input_shape = inputShape
+        self.input_shape = (inputShape[0]*seqLen, inputShape[1], inputShape[2])
         self.noisy = False  # No noisy layers regardless
 
         self.conv1 = nn.Conv2d(self.input_shape[0], 32, kernel_size=8, stride=4)
@@ -35,10 +35,11 @@ class DQN(nn.Module):
         super(DQN, self).__init__()
 
         self.inputShape = params.inputShape
+        self.seqLen = params.sequenceLength
         self.numActions = params.numActions
         self.noisy = params.noisyLinear
 
-        self.body = body(self.inputShape)
+        self.body = body(self.inputShape, self.seqLen)
 
         self.fc1 = nn.Linear(self.body.feature_size(), params.hiddenDimensions) if not self.noisy \
             else NoisyLinearLayer(self.body.feature_size(), params.hiddenDimensions, params.noisyParam)
@@ -63,10 +64,11 @@ class DuelingDQN(nn.Module):
         super(DuelingDQN, self).__init__()
 
         self.inputShape = params.inputShape
+        self.seqLen = params.sequenceLength
         self.numActions = params.numActions
         self.noisy = params.noisyLinear
 
-        self.body = body(self.inputShape)
+        self.body = body(self.inputShape, self.seqLen)
 
         self.adv1 = nn.Linear(self.body.feature_size(), params.hiddenDimensions) if not self.noisy else NoisyLinearLayer(
             self.body.feature_size(), params.hiddenDimensions, params.noisyParam)
@@ -103,11 +105,12 @@ class CategoricalDQN(nn.Module):
         super(CategoricalDQN, self).__init__()
 
         self.inputShape = params.inputShape
+        self.seqLen = params.sequenceLength
         self.numActions = params.numActions
         self.noisy = params.noisyLinear
         self.atoms = params.atoms
 
-        self.body = body(self.inputShape)
+        self.body = body(self.inputShape, self.seqLen)
 
         self.fc1 = nn.Linear(self.body.feature_size(), params.hiddenDimensions) if not self.noisy \
             else NoisyLinearLayer(self.body.feature_size(), params.hiddenDimensions, params.noisyParam)
@@ -134,11 +137,12 @@ class CategoricalDuelingDQN(nn.Module):
         super(CategoricalDuelingDQN, self).__init__()
 
         self.inputShape = params.inputShape
+        self.seqLen = params.sequenceLength
         self.numActions = params.numActions
         self.noisy = params.noisyLinear
         self.atoms = params.atoms
 
-        self.body = body(self.inputShape)
+        self.body = body(self.inputShape, self.seqLen)
 
         self.adv1 = nn.Linear(self.body.feature_size(), params.hiddenDimensions) if not self.noisy \
             else NoisyLinearLayer(self.body.feature_size(), params.hiddenDimensions, params.noisyParam)

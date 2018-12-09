@@ -18,7 +18,7 @@ class doomParams(object):
     distributed = 1
 
     #[NET PARAMS]
-    recurrent=1
+    recurrent=0
     startEps=1.0
     endEps=0.01
     epsSteps=250000
@@ -27,7 +27,7 @@ class doomParams(object):
     frameskip=2
     framesBeforeTraining=10000
     learningRate=0.001
-    recurrenceHistory=4
+    sequenceLength=4
     trainingFrequency=4
     numActions=3
 

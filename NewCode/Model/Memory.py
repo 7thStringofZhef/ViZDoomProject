@@ -95,6 +95,7 @@ class ExperienceReplayMemory:
     def __init__(self, params):
         self.capacity = params.replayMemoryCapacity
         self.memory = []
+        self.seqLen = params.sequenceLength
 
     def push(self, transition):
         self.memory.append(transition)
@@ -102,7 +103,10 @@ class ExperienceReplayMemory:
             del self.memory[0]
 
     def sample(self, batch_size):
-        return random.sample(self.memory, batch_size), None, None
+        endIndices = npr.randint(self.seqLen-1, len(self.memory), batch_size)
+        indexSets = [np.arange(endIdx-self.seqLen-1, endIdx, dtype=np.int32) for endIdx in endIndices]
+        return [self.memory[indices] for indices in indexSets], None, None
+        # return random.sample(self.memory, batch_size), None, None
 
     def __len__(self):
         return len(self.memory)
@@ -111,6 +115,7 @@ class ExperienceReplayMemory:
 class PrioritizedReplayMemory(object):
     def __init__(self, params):
         super(PrioritizedReplayMemory, self).__init__()
+        self.seqLen = params.sequenceLength
         self._storage = []
         self._maxsize = params.replayMemoryCapacity
         self._next_idx = 0
@@ -145,14 +150,16 @@ class PrioritizedReplayMemory(object):
         self._it_min[idx] = self._max_priority ** self._alpha
 
     def _encode_sample(self, idxes):
-        return [self._storage[i] for i in idxes]
+        return [[self._storage[i] for i in indexSet] for indexSet in idxes]
 
     def _sample_proportional(self, batch_size):
         res = []
         for _ in range(batch_size):
-            mass = npr.random() * self._it_sum.sum(0, len(self._storage) - 1)
-            idx = self._it_sum.find_prefixsum_idx(mass)
-            res.append(idx)
+            idx = -1
+            while idx < self.seqLen-1:  # For stacked frames
+                mass = npr.random() * self._it_sum.sum(0, len(self._storage) - 1)
+                idx = self._it_sum.find_prefixsum_idx(mass)
+                res.append(np.arange(idx-self.seqLen-1, idx, dtype=np.int32))
         return res
 
     def sample(self, batch_size):
@@ -170,12 +177,12 @@ class PrioritizedReplayMemory(object):
         max_weight = (p_min * len(self._storage)) ** (-beta)
 
         for idx in idxes:
-            p_sample = self._it_sum[idx] / self._it_sum.sum()
+            p_sample = self._it_sum[idx[-1]] / self._it_sum.sum()
             weight = (p_sample * len(self._storage)) ** (-beta)
             weights.append(weight / max_weight)
         weights = torch.tensor(weights, device=device, dtype=torch.float)
         encoded_sample = self._encode_sample(idxes)
-        return encoded_sample, idxes, weights
+        return encoded_sample, [indexSet[-1] for indexSet in idxes], weights
 
     def update_priorities(self, idxes, priorities):
         for idx, priority in zip(idxes, priorities):
@@ -189,7 +196,7 @@ class RecurrentExperienceReplayMemory:
     def __init__(self, params):
         self.capacity = params.replayMemoryCapacity
         self.memory = []
-        self.seq_length = params.recurrenceHistory
+        self.seq_length = params.sequenceLength
 
     def push(self, transition):
         self.memory.append(transition)
@@ -227,7 +234,7 @@ class RecurrentPrioritizedReplayMemory(object):
         super(RecurrentPrioritizedReplayMemory, self).__init__()
         self._storage = []
         self._maxsize = params.replayMemoryCapacity
-        self.seqLen = params.recurrenceHistory
+        self.seqLen = params.sequenceLength
         self._next_idx = 0
 
         self._alpha = params.priorityOmega

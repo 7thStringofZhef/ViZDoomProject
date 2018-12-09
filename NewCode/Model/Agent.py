@@ -145,7 +145,10 @@ class RainbowAgent(BaseAgent):
         self.supports = torch.linspace(self.vMin, self.vMax, self.atoms).view(1, 1, self.atoms).to(device)
         self.delta = (self.vMax - self.vMin) / (self.atoms - 1)
 
-        self.num_feats = params.inputShape
+        if self.recurrent:
+            self.num_feats = params.inputShape
+        else: # Stack frames
+            self.num_feats = (params.inputShape[0]*params.sequenceLength, params.inputShape[1], params.inputShape[2])
         self.num_actions = params.numActions
         self.env = env
 
@@ -177,8 +180,8 @@ class RainbowAgent(BaseAgent):
         # Current timestep
         self.currFrame = 0
 
-        # Sequence length (if DRQN)
-        self.sequence_length = params.recurrenceHistory
+        # Sequence length
+        self.sequence_length = params.sequenceLength
         if params.recurrent:
             self.reset_hx()
 
@@ -210,12 +213,23 @@ class RainbowAgent(BaseAgent):
 
         self.memory.push((state, action, R, s_))
 
+    # Decompose a sequence of transitions into parsable info
+    # If seqLen is 1, will look exactly right
+    def decomposeSequence(self, transitions):
+        for batch in range(len(transitions)):
+            transitions[batch][0] = np.vstack(transitions[batch][0])  # Stack of states
+            transitions[batch][1] = transitions[batch][1][-1]  # Last action
+            transitions[batch][2] = transitions[batch][2][-1]  # Immediate reward after taking action given sequence
+            transitions[batch][3] = np.vstack(transitions[batch][3])  # Stack of next states
+        return transitions
+
     # Prepare a batch from memory for training
     def prep_minibatch(self):
         if self.params.recurrent:
             return self.prep_minibatch_recurrent()
         # random transition batch is taken from experience replay memory
         transitions, indices, weights = self.memory.sample(self.batchSize)
+        transitions = self.decomposeSequence(transitions)
 
         batch_state, batch_action, batch_reward, batch_next_state = zip(*transitions)
 
