@@ -95,23 +95,31 @@ class ExperienceReplayMemory:
     def __init__(self, params):
         self.capacity = params.replayMemoryCapacity
         self.memory = []
+        self.states = []
+        self.actions = []
+        self.rewards = []
+        self.nextStates = []
         self.seqLen = params.sequenceLength
 
     def push(self, transition):
-        self.memory.append(transition)
-        if len(self.memory) > self.capacity:
-            del self.memory[0]
+        self.states.append(transition[0])
+        self.actions.append(transition[1])
+        self.rewards.append(transition[2])
+        self.nextStates.append(transition[3])
+        if len(self.states) > self.capacity:
+            del self.states[0], self.actions[0], self.rewards[0], self.nextStates[0]
 
     def sample(self, batch_size):
-        endIndices = npr.randint(self.seqLen-1, len(self.memory), batch_size)
+        endIndices = npr.randint(self.seqLen, len(self.states), batch_size)
         # Stack frames here if needed
-        #for idx in endIndices:
-            #memorySegment = self.memory[idx-self.seqLen:idx]
-        return [self.memory[idx-self.seqLen:idx] for idx in endIndices], None, None
-        # return random.sample(self.memory, batch_size), None, None
+        return [(np.vstack(self.states[idx-self.seqLen:idx]),
+                 self.actions[idx],
+                 self.rewards[idx],
+                 None if any(elem is None for elem in self.nextStates[idx-self.seqLen:idx])
+                 else np.vstack(self.nextStates[idx-self.seqLen:idx])) for idx in endIndices], None, None
 
     def __len__(self):
-        return len(self.memory)
+        return len(self.states)
 
 
 class PrioritizedReplayMemory(object):

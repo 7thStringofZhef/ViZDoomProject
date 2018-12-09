@@ -215,31 +215,12 @@ class RainbowAgent(BaseAgent):
 
         self.memory.push((state, action, R, s_))
 
-    # Decompose a sequence of transitions into parsable info
-    # If seqLen is 1, will look exactly right
-    #
-    def decomposeSequence(self, transitions):
-        newTransitions = list()
-        for batch in range(len(transitions)):
-            newTransitions.append([])
-            newTransitions[-1].append(np.vstack([transitions[batch][seqIdx][0] for seqIdx in range(self.sequence_length)])) # Stack of states. Shouldn't be any Nones
-            newTransitions[-1].append(transitions[batch][-1][1])  # Last action
-            newTransitions[-1].append(transitions[batch][-1][2])  # Immediate reward after taking action given sequence
-            # Stack of next states. Could be Nones in there
-            nextStates = [transitions[batch][seqIdx][3] for seqIdx in range(self.sequence_length)]
-            if any(elem is None for elem in nextStates):
-                newTransitions[-1].append(None)  # Next state is done
-            else:
-                newTransitions[-1].append(np.vstack(nextStates))
-        return newTransitions
-
     # Prepare a batch from memory for training
     def prep_minibatch(self):
         if self.params.recurrent:
             return self.prep_minibatch_recurrent()
         # random transition batch is taken from experience replay memory
         transitions, indices, weights = self.memory.sample(self.batchSize)
-        transitions = self.decomposeSequence(transitions)
 
         batch_state, batch_action, batch_reward, batch_next_state = zip(*transitions)
 
