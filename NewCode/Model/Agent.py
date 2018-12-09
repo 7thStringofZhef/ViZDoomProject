@@ -8,7 +8,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 from .Feedforward import *
 from .Recurrent import *
-from .Memory import ExperienceReplayMemory, PrioritizedReplayMemory, RecurrentExperienceReplayMemory
+from .Memory import ExperienceReplayMemory, PrioritizedReplayMemory, RecurrentExperienceReplayMemory, RecurrentPrioritizedReplayMemory
 
 # Map params to specific model
 def chooseModel(params):
@@ -177,6 +177,11 @@ class RainbowAgent(BaseAgent):
         # Current timestep
         self.currFrame = 0
 
+        # Sequence length (if DRQN)
+        self.sequence_length = params.recurrenceHistory
+        if params.recurrent:
+            self.reset_hx()
+
     def declare_networks(self):
         modelFn = chooseModel(self.params)
         self.model = modelFn(self.params)
@@ -187,11 +192,12 @@ class RainbowAgent(BaseAgent):
             self.target_model = None
 
     def declare_memory(self):
-        if not self.recurrent:
+        if not self.params.recurrent:
             self.memory = ExperienceReplayMemory(self.params) if not self.priorityReplay \
                 else PrioritizedReplayMemory(self.params)
         else:
-            self.memory = RecurrentExperienceReplayMemory(self.params)
+            self.memory = RecurrentExperienceReplayMemory(self.params) if not self.priorityReplay \
+                else RecurrentPrioritizedReplayMemory(self.params)
 
     def append_to_replay(self, s, a, r, s_):
         self.nstep_buffer.append((s, a, r, s_))
@@ -206,6 +212,8 @@ class RainbowAgent(BaseAgent):
 
     # Prepare a batch from memory for training
     def prep_minibatch(self):
+        if self.params.recurrent:
+            return self.prep_minibatch_recurrent()
         # random transition batch is taken from experience replay memory
         transitions, indices, weights = self.memory.sample(self.batchSize)
 
@@ -225,6 +233,34 @@ class RainbowAgent(BaseAgent):
             empty_next_state_values = False
         except:
             non_final_next_states = None
+            empty_next_state_values = True
+
+        return batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights
+
+    def prep_minibatch_recurrent(self):
+        transitions, indices, weights = self.memory.sample(self.batchSize)
+
+        batch_state, batch_action, batch_reward, batch_next_state = zip(*transitions)
+
+        shape = (self.batchSize, self.sequence_length) + self.num_feats
+
+        batch_state = torch.tensor(batch_state, device=self.device, dtype=torch.float).view(shape)
+        batch_action = torch.tensor(batch_action, device=self.device, dtype=torch.long).view(self.batchSize,
+                                                                                             self.sequence_length, -1)
+        batch_reward = torch.tensor(batch_reward, device=self.device, dtype=torch.float).view(self.batchSize,
+                                                                                              self.sequence_length)
+        # get set of next states for end of each sequence
+        batch_next_state = tuple(
+            [batch_next_state[i] for i in range(len(batch_next_state)) if (i + 1) % (self.sequence_length) == 0])
+
+        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch_next_state)), device=self.device,
+                                      dtype=torch.uint8)
+        try:  # sometimes all next states are false, especially with nstep returns
+            non_final_next_states = torch.tensor([s for s in batch_next_state if s is not None], device=self.device,
+                                                 dtype=torch.float).unsqueeze(dim=1)
+            non_final_next_states = torch.cat([batch_state[non_final_mask, 1:, :], non_final_next_states], dim=1)
+            empty_next_state_values = False
+        except:
             empty_next_state_values = True
 
         return batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights
@@ -266,8 +302,14 @@ class RainbowAgent(BaseAgent):
         return m
 
     def compute_loss(self, batch_vars):
-        if self.params.distributed:
-            return self.compute_loss_dist(batch_vars)
+        if self.params.recurrent:
+            if self.params.distributed:
+                return self.compute_loss_recurrent_dist(batch_vars)
+            else:
+                return self.compute_loss_recurrent(batch_vars)
+        else:
+            if self.params.distributed:
+                return self.compute_loss_dist(batch_vars)
         batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
 
         # estimate
@@ -283,7 +325,6 @@ class RainbowAgent(BaseAgent):
                     self.target_model.sample_noise()
                     max_next_q_values[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)
                 else:
-                    self.model.sample_noise()
                     max_next_q_values[non_final_mask] = self.model(non_final_next_states).gather(1, max_next_action)
             expected_q_values = batch_reward + ((self.gamma ** self.nsteps) * max_next_q_values)
 
@@ -314,6 +355,49 @@ class RainbowAgent(BaseAgent):
         loss = loss * weights
         loss = loss.mean()
 
+        return loss
+
+    def compute_loss_recurrent(self, batch_vars):
+        batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
+
+        # estimate
+        current_q_values, _ = self.model(batch_state)
+        current_q_values = current_q_values.gather(2, batch_action).squeeze()
+
+        # target
+        with torch.no_grad():
+            max_next_q_values = torch.zeros((self.batchSize, self.sequence_length), device=self.device,
+                                            dtype=torch.float)
+            if not empty_next_state_values:
+                max_next, _ = self.target_model(non_final_next_states)
+                max_next_q_values[non_final_mask] = max_next.max(dim=2)[0]
+            expected_q_values = batch_reward + ((self.gamma ** self.nsteps) * max_next_q_values)
+
+        diff = (expected_q_values - current_q_values)
+        loss = self.huber(diff)
+        loss = loss.mean()
+        return loss
+
+    #***Still needs work
+    def compute_loss_recurrent_dist(self, batch_vars):
+        batch_state, batch_action, batch_reward, non_final_next_states, non_final_mask, empty_next_state_values, indices, weights = batch_vars
+
+        # estimate
+        current_q_values, _ = self.model(batch_state)
+        current_q_values = current_q_values.gather(2, batch_action).squeeze()
+
+        # target
+        with torch.no_grad():
+            max_next_q_values = torch.zeros((self.batchSize, self.sequence_length), device=self.device,
+                                            dtype=torch.float)
+            if not empty_next_state_values:
+                max_next, _ = self.target_model(non_final_next_states)
+                max_next_q_values[non_final_mask] = max_next.max(dim=2)[0]
+            expected_q_values = batch_reward + ((self.gamma ** self.nsteps) * max_next_q_values)
+
+        diff = (expected_q_values - current_q_values)
+        loss = self.huber(diff)
+        loss = loss.mean()
         return loss
 
     # Append experience to replay buffer
@@ -395,8 +479,9 @@ class RainbowAgent(BaseAgent):
 
             self.memory.push((state, action, R, None))
 
+    # Reset state buffer
     def reset_hx(self):
-        pass
+        self.seq = [np.zeros(self.num_feats) for j in range(self.sequence_length)]
 
     # Set to eval
     def eval(self):

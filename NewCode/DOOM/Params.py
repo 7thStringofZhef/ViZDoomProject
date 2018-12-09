@@ -18,14 +18,14 @@ class doomParams(object):
     distributed = 1
 
     #[NET PARAMS]
-    recurrent=0
+    recurrent=1
     startEps=1.0
     endEps=0.01
     epsSteps=250000
     gamma=0.99
     batchSize=32
     frameskip=2
-    framesBeforeTraining=80000
+    framesBeforeTraining=10000
     learningRate=0.001
     recurrenceHistory=4
     trainingFrequency=4

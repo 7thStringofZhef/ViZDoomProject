@@ -68,63 +68,60 @@ if __name__=="__main__":
                   [0, 0, 1]]
 
     for params in paramList:
-        try:
-            torch.cuda.empty_cache()
-            print(params.modelName)
-            env = VizDoomEnv(params)
-            agent = RainbowAgent(params)
-            currentFrame = 0
-            episodeRewards = list()
-            evalRewards = list()
-            evalRewardFrames = list()
-            currentEpisodeReward = 0.0
-            state = env.reset()
-            episodeCounter = 1
-            nextEvalFrame = params.framesBetweenEvaluations
-            nextSaveFrame = params.framesBetweenSaves
+        torch.cuda.empty_cache()
+        print(params.modelName)
+        env = VizDoomEnv(params)
+        agent = RainbowAgent(params)
+        currentFrame = 0
+        episodeRewards = list()
+        evalRewards = list()
+        evalRewardFrames = list()
+        currentEpisodeReward = 0.0
+        state = env.reset()
+        episodeCounter = 1
+        nextEvalFrame = params.framesBetweenEvaluations
+        nextSaveFrame = params.framesBetweenSaves
 
-            while currentFrame <= params.numFrames:
-                currentFrame += 1
-                if currentFrame == params.framesBeforeTraining:
-                    print("Training starting...")
+        while currentFrame <= params.numFrames:
+            currentFrame += 1
+            if currentFrame == params.framesBeforeTraining:
+                print("Training starting...")
 
-                # Evaluate periodically (takes noisy layer offline)
-                if currentFrame >= nextEvalFrame:
-                    evalRewardFrames.append(currentFrame)
-                    evalRewards.append(evalEpisodes(agent, env))
-                    nextEvalFrame += params.framesBetweenEvaluations
-                    state = env.reset()
+            # Evaluate periodically (takes noisy layer offline)
+            if currentFrame >= nextEvalFrame:
+                evalRewardFrames.append(currentFrame)
+                evalRewards.append(evalEpisodes(agent, env))
+                nextEvalFrame += params.framesBetweenEvaluations
+                state = env.reset()
 
-                # Save periodically (in case stuff dies)
-                if currentFrame >= nextSaveFrame:
-                    save(agent, episodeRewards, evalRewards, evalRewardFrames)
-                    nextSaveFrame += params.framesBetweenSaves
+            # Save periodically (in case stuff dies)
+            if currentFrame >= nextSaveFrame:
+                save(agent, episodeRewards, evalRewards, evalRewardFrames)
+                nextSaveFrame += params.framesBetweenSaves
 
-                action = agent.get_action(state)  # Get action
-                agent.currFrame += 1  # Update agent's counter
-                newState, reward, isDone, gameVars = env.step(actionList[action])  # Take a step
-                if isDone:
-                    newState = None
-                agent.update(state, action, reward, newState, currentFrame)  # Add experience to memory, train
-                currentEpisodeReward += reward  # Add reward from action
-                state = deepcopy(newState)  # Copy just in case
+            action = agent.get_action(state)  # Get action
+            agent.currFrame += 1  # Update agent's counter
+            newState, reward, isDone, gameVars = env.step(actionList[action])  # Take a step
+            if isDone:
+                newState = None
+            agent.update(state, action, reward, newState, currentFrame)  # Add experience to memory, train
+            currentEpisodeReward += reward  # Add reward from action
+            state = deepcopy(newState)  # Copy just in case
 
-                # If episode is done, save, reset environment
-                if isDone:
-                    episodeCounter += 1
-                    print('Starting episode ' + str(episodeCounter))
-                    agent.finish_nstep()
-                    state = env.reset()
-                    agent.save_reward(currentEpisodeReward)
-                    episodeRewards.append(currentEpisodeReward)
-                    currentEpisodeReward = 0.0
+            # If episode is done, save, reset environment
+            if isDone:
+                episodeCounter += 1
+                print('Starting episode ' + str(episodeCounter))
+                agent.finish_nstep()
+                state = env.reset()
+                agent.save_reward(currentEpisodeReward)
+                episodeRewards.append(currentEpisodeReward)
+                currentEpisodeReward = 0.0
 
-            # Final save
-            save(agent, episodeRewards, evalRewards, evalRewardFrames)
-            env.game.close()
-            # agent.save_replay()
-        except:
-            continue #  If some ablation fails, just keep going
+        # Final save
+        save(agent, episodeRewards, evalRewards, evalRewardFrames)
+        env.game.close()
+        # agent.save_replay()
 
 
 """
