@@ -127,6 +127,10 @@ class PrioritizedReplayMemory(object):
         super(PrioritizedReplayMemory, self).__init__()
         self.seqLen = params.sequenceLength
         self._storage = []
+        self.states = []
+        self.actions = []
+        self.rewards = []
+        self.nextStates = []
         self._maxsize = params.replayMemoryCapacity
         self._next_idx = 0
 
@@ -151,25 +155,34 @@ class PrioritizedReplayMemory(object):
         idx = self._next_idx
 
         if self._next_idx >= len(self._storage):
-            self._storage.append(data)
+            self.states.append(data[0])
+            self.actions.append(data[1])
+            self.rewards.append(data[2])
+            self.nextStates.append(data[3])
         else:
-            self._storage[self._next_idx] = data
+            self.states[self._next_idx], self.actions[self._next_idx], self.rewards[self._next_idx], self.nextStates[self._next_idx] = data
         self._next_idx = (self._next_idx + 1) % self._maxsize
 
         self._it_sum[idx] = self._max_priority ** self._alpha
         self._it_min[idx] = self._max_priority ** self._alpha
 
     def _encode_sample(self, idxes):
-        return [self._storage[i-self.seqLen:i] for i in idxes]
+        # Stack frames here if needed
+        return [(np.vstack(self.states[idx-self.seqLen:idx]),
+                 self.actions[idx],
+                 self.rewards[idx],
+                 None if any(elem is None for elem in self.nextStates[idx-self.seqLen:idx])
+                 else np.vstack(self.nextStates[idx-self.seqLen:idx])) for idx in idxes]
+        # return [self._storage[i-self.seqLen:i] for i in idxes]
 
     def _sample_proportional(self, batch_size):
         res = []
         for _ in range(batch_size):
             idx = -1
-            while idx < self.seqLen-1:  # For stacked frames
+            while idx < self.seqLen:  # For stacked frames
                 mass = npr.random() * self._it_sum.sum(0, len(self._storage) - 1)
                 idx = self._it_sum.find_prefixsum_idx(mass)
-                res.append(idx)
+            res.append(idx)
         return res
 
     def sample(self, batch_size):
@@ -184,11 +197,11 @@ class PrioritizedReplayMemory(object):
         self.frame += 1
 
         # max_weight given to smallest prob
-        max_weight = (p_min * len(self._storage)) ** (-beta)
+        max_weight = (p_min * len(self.states)) ** (-beta)
 
         for idx in idxes:
             p_sample = self._it_sum[idx] / self._it_sum.sum()
-            weight = (p_sample * len(self._storage)) ** (-beta)
+            weight = (p_sample * len(self.states)) ** (-beta)
             weights.append(weight / max_weight)
         weights = torch.tensor(weights, device=device, dtype=torch.float)
         encoded_sample = self._encode_sample(idxes)
@@ -196,7 +209,7 @@ class PrioritizedReplayMemory(object):
 
     def update_priorities(self, idxes, priorities):
         for idx, priority in zip(idxes, priorities):
-            assert 0 <= idx < len(self._storage)
+            assert 0 <= idx < len(self.states)
             self._it_sum[idx] = (priority + 1e-5) ** self._alpha
             self._it_min[idx] = (priority + 1e-5) ** self._alpha
             self._max_priority = max(self._max_priority, (priority + 1e-5))
