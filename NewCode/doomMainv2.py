@@ -67,7 +67,7 @@ if __name__=="__main__":
                   [0, 1, 0],
                   [0, 0, 1]]
 
-    for params in paramList[1:]:
+    for params in paramList:
         torch.cuda.empty_cache()
         print(params.modelName)
         env = VizDoomEnv(params)
