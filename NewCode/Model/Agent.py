@@ -356,8 +356,9 @@ class RainbowAgent(BaseAgent):
         target_prob = self.projection_distribution(batch_vars)
 
         loss = -(target_prob * current_dist.log()).sum(-1)
-        self.memory.update_priorities(indices, loss.detach().squeeze().abs().cpu().numpy().tolist())
-        loss = loss * weights
+        if self.priorityReplay:
+            self.memory.update_priorities(indices, loss.detach().squeeze().abs().cpu().numpy().tolist())
+            loss = loss * weights
         loss = loss.mean()
 
         return loss

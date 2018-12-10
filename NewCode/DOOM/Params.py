@@ -4,8 +4,8 @@ from vizdoom import GameVariable
 class doomParams(object):
     scenarioPath='CS7180Scenario.cfg'
     numFrames=500000
-    framesBetweenEvaluations=50000
-    framesBetweenSaves=100000
+    framesBetweenEvaluations=20000
+    framesBetweenSaves=20000
 
     modelName="Test"
 
@@ -25,7 +25,7 @@ class doomParams(object):
     gamma=0.99
     batchSize=32
     frameskip=4
-    framesBeforeTraining=80000
+    framesBeforeTraining=1000
     learningRate=0.001
     sequenceLength=4
     trainingFrequency=4
