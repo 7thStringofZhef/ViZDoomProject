@@ -3,7 +3,7 @@ from vizdoom import GameVariable
 
 class doomParams(object):
     scenarioPath='CS7180Scenario.cfg'
-    numFrames=2000000
+    numFrames=500000
     framesBetweenEvaluations=50000
     framesBetweenSaves=100000
 
@@ -24,8 +24,8 @@ class doomParams(object):
     epsSteps=250000
     gamma=0.99
     batchSize=32
-    frameskip=2
-    framesBeforeTraining=1000
+    frameskip=4
+    framesBeforeTraining=80000
     learningRate=0.001
     sequenceLength=4
     trainingFrequency=4
