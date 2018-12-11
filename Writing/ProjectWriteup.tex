@@ -75,66 +75,39 @@
  	
  	Thus, by incorporating recurrent layers, a DRQN is able to infer the state from temporally extended inputs, and so its calculated $Q(o,a)$ can more accurately reflect sequences of events. The original DQN approximated this by providing input as a sequence of 4 frames*.
  	
- 	\subsection{Other extensions}
- 	
- 	 
- 	
 	 
 	
 	\section{Related Work}
-	You must submit the following items to ensure that your paper is published:
+	
+	The primary motivation behind this paper was Rainbow, a paper which combined several improvements to DQN*. Specifically, Rainbow applies:
+	\begin{itemize}
+		\item \textbf{Double Q-Learning}: Using a target network to reduce maximization bias*
+		\item \textbf{Prioritized Replay}: Weighting experiences based on their difference from expected value*
+		\item \textbf{Dueling Networks}: Dividing the output of a network into the value of a state and the advantage of taking an action*
+		\item \textbf{Multi-step Learning}: Calculating the return of multiple future steps rather than just the immediate reward and expected value of the next state*
+		\item \textbf{Distributional RL}: Maintaining a distribution of expected Q-values rather than a single one*
+		\item \textbf{Noisy Nets}: Replacing $\epsilon$-greedy exploration (i.e., taking a random action with probability $\epsilon$) with implicit exploration in the form of injected noise during training*
+	\end{itemize}
+	Rainbow and its ablations were tested extensively on the Atari environment in an attempt to determine which improvements made the biggest difference and explain the potential advantages of each. They concluded that prioritized replay and multi-step learning were the most impactful additions, but that the impacts of all the improvements were dependent on the environment chosen. Thus, it would be of interest to see how these improvements interact with more complex, partially-observable environments. 
+	
+	The other motivation was to leverage the VizDoom environment. VizDoom is a doom-based AI research platform specifically tailored to deep reinforcement learning*. As such, it has inspired both an annual AI deathmatch competition* and several papers. Among these is Chaplot and Lample's Arnold, an AI which combines DRQN navigation and DQN shooting and which won the 2017 competition. Arnold forms the primary basis for this paper's AI architecture.
 	
 	\section{Project Description}
+	
+	This project consisted of 3 main parts.
+	\begin{itemize}
+		\item Implement the algorithms from Rainbow for a DRQN-based agent
+		\item Develop a scenario in VizDoom 
+		\item As in Rainbow, permute which algorithms are used for the agent and observe how the permutation affects training
+	\end{itemize}
+
+	For the first part, I decided to re-use Arnold's architecture. 
 	
 	\subsection{Experiments}
 	
 	In the \LaTeX{} source for your paper, you \textbf{must} place the following lines as shown in the example in this subsection. This command set-up is for three authors. Add or subtract author and address lines as necessary, and uncomment the portions that apply to you. In most instances, this is all you need to do to format your paper in the Times font. The helvet package will cause Helvetica to be used for sans serif, and the courier package will cause Courier to be used for the typewriter font. These files are part of the PSNFSS2e package, which is freely available from many Internet sites (and is often part of a standard installation).
 	
 	Leave the setcounter for section number depth commented out and set at 0 unless you want to add section numbers to your paper. If you do add section numbers, you must uncomment this line and change the number to 1 (for section numbers), or 2 (for section and subsection numbers). The style file will not work properly with numbering of subsubsections, so do not use a number higher than 2.
-	
-	
-	\begin{quote}
-		\begin{small}
-			\textbackslash documentclass[letterpaper]{article}\\
-			\% \textit{Required Packages}\\
-			\textbackslash usepackage\{aaai\}\\
-			\textbackslash usepackage\{times\}\\
-			\textbackslash usepackage\{helvet\}\\
-			\textbackslash usepackage\{courier\}\\
-			\textbackslash setlength\{\textbackslash pdfpagewidth\}\{8.5in\}
-			\textbackslash setlength\{\textbackslash pdfpageheight\}\{11in\}\\
-			\%\%\%\%\%\%\%\%\%\%\\
-			\% \textit{PDFINFO for PDF\LaTeX{}}\\
-			\% Uncomment and complete the following for metadata (your paper must compile with PDF\LaTeX{})\\
-			\textbackslash pdfinfo\{\\
-			/Title (Input Your Paper Title Here)\\
-			/Author (John Doe, Jane Doe)\\
-			/Keywords (Input your paper's keywords in this optional area)\\
-			\}\\
-			\%\%\%\%\%\%\%\%\%\%\\
-			\% \textit{Section Numbers}\\
-			\% Uncomment if you want to use section numbers\\
-			\% and change the 0 to a 1 or 2\\
-			\% \textbackslash setcounter\{secnumdepth\}\{0\}\\
-			\%\%\%\%\%\%\%\%\%\%\\
-			\% \textit{Title, Author, and Address Information}\\
-			\textbackslash title\{Title\}\\
-			\textbackslash author\{Author 1 \textbackslash and Author 2\textbackslash\textbackslash \\ 
-			Address line\textbackslash\textbackslash\\ Address line\textbackslash\textbackslash \\
-			\textbackslash And\\
-			Author 3\textbackslash\textbackslash\\ Address line\textbackslash\textbackslash\\ Address line\}\\
-			\%\%\%\%\%\%\%\%\%\%\\
-			\% \textit{Body of Paper Begins}\\
-			\textbackslash begin\{document\}\\
-			\textbackslash maketitle\\
-			...\\
-			\%\%\%\%\%\%\%\%\%\%\\
-			\% \textit{References and End of Paper}\\
-			\textbackslash bibliography\{Bibliography-File\}\\
-			\textbackslash bibliographystyle\{aaai\}\\
-			\textbackslash end\{document\}
-		\end{small}
-	\end{quote}
 	
 	\subsection{Conclusion}
 	PDF files contain document summary information that enables us to create an Acrobat index (pdx) file, and also allows search engines to locate and present your paper more accurately. \textbf{Document Metadata  for Author and Title are REQUIRED.} 

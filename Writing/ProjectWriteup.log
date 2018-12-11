@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6350 64-bit) (preloaded format=pdflatex 2017.10.10)  11 DEC 2018 14:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6350 64-bit) (preloaded format=pdflatex 2017.10.10)  11 DEC 2018 15:54
 entering extended mode
 **./ProjectWriteup.tex
 (ProjectWriteup.tex
@@ -80,44 +80,39 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 
 
 ]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 107.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 107.
-
-Underfull \hbox (badness 10000) in paragraph at lines 98--137
-\OMS/cmsy/m/n/9 n\OT1/ptm/m/n/9 setlength\OMS/cmsy/m/n/9 fn\OT1/ptm/m/n/9 pdfpa
-gewidth\OMS/cmsy/m/n/9 gf\OT1/ptm/m/n/9 8.5in\OMS/cmsy/m/n/9 g
+Underfull \hbox (badness 1117) in paragraph at lines 85--86
+[]\OT1/ptm/b/n/10 Prioritized Re-play\OT1/ptm/m/n/10 : Weight-ing ex-pe-ri-ence
+s based on
  []
 
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 154--161
+Underfull \hbox (badness 10000) in paragraph at lines 127--134
 
  []
 
 
-Underfull \hbox (badness 1281) in paragraph at lines 163--164
+Underfull \hbox (badness 1281) in paragraph at lines 136--137
 \OT1/ptm/m/n/10 The fol-low-ing pack-ages are in-com-pat-i-ble with aaai.sty
  []
 
 
-Underfull \hbox (badness 3333) in paragraph at lines 198--202
+Underfull \hbox (badness 3333) in paragraph at lines 171--175
 []\OT1/ptm/m/n/10 This com-mand is usu-ally suf-fi-cient to change the
  []
 
 
-Underfull \hbox (badness 3965) in paragraph at lines 198--202
+Underfull \hbox (badness 3965) in paragraph at lines 171--175
 \OT1/ptm/m/n/10 for-mat. Some-times, how-ever, it may not work. Use
  []
 
 
-Underfull \hbox (badness 1087) in paragraph at lines 210--212
+Underfull \hbox (badness 1087) in paragraph at lines 183--185
 \OMS/cmsy/m/n/10 n\OT1/ptm/m/n/10 abovedisplayskip, \OMS/cmsy/m/n/10 n\OT1/ptm/
 m/n/10 belowdisplayskip, and \OMS/cmsy/m/n/10 n\OT1/ptm/m/n/10 arraycolsep.
  []
 
 
-Underfull \hbox (badness 2035) in paragraph at lines 213--214
+Underfull \hbox (badness 2035) in paragraph at lines 186--187
 \OT1/ptm/m/n/10 in-clude \OMS/cmsy/m/n/10 n\OT1/ptm/m/n/10 columnsep, \OMS/cmsy
 /m/n/10 n\OT1/ptm/m/n/10 topmargin, \OMS/cmsy/m/n/10 n\OT1/ptm/m/n/10 topskip, 
 \OMS/cmsy/m/n/10 n\OT1/ptm/m/n/10 textheight,
@@ -125,103 +120,104 @@ Underfull \hbox (badness 2035) in paragraph at lines 213--214
 
 [3]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 233.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 206.
 
-Underfull \hbox (badness 1264) in paragraph at lines 233--235
+Underfull \hbox (badness 1264) in paragraph at lines 206--208
  \OT1/ptm/b/n/10 Ob-tain-ing Type 1 Com-puter Mod-ern for L[]T[]X. \OT1/ptm/m/n
 /10 If
  []
 
 
-Underfull \hbox (badness 1281) in paragraph at lines 233--235
+Underfull \hbox (badness 1281) in paragraph at lines 206--208
 \OT1/ptm/m/n/10 pa-per (you can-not use it for the text) you may need
  []
 
 
-Underfull \hbox (badness 1092) in paragraph at lines 286--289
+Underfull \hbox (badness 1092) in paragraph at lines 259--262
 \OT1/ptm/m/n/10 If the ti-tle and au-thor in-for-ma-tion does not fit in the
  []
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 290.
+(Font)              <10.95> on input line 263.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 290.
+(Font)              <8> on input line 263.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 263.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 290.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 291.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 263.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 264.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 1231) in paragraph at lines 291--294
+Underfull \hbox (badness 1231) in paragraph at lines 264--267
 \OT1/ptm/m/n/10 The copy-right no-tice au-to-mat-i-cally ap-pears if you use
  []
 
-[4]
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no ’ in font ptmr7t!
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no “ in font ptmr7t!
-
-Underfull \hbox (badness 3209) in paragraph at lines 342--343
+[4]
+Underfull \hbox (badness 3209) in paragraph at lines 315--316
  \OT1/ptm/b/n/10 Sec-tion Head-ings. \OT1/ptm/m/n/10 Sec-tions should be ar-ran
 ged and
  []
 
 
-Underfull \hbox (badness 1248) in paragraph at lines 345--346
+Underfull \hbox (badness 1248) in paragraph at lines 318--319
 \OT1/ptm/m/n/10 ``Ac-knowl-edg-ments." This sec-tion in-cludes ac-knowl-edg-
  []
 
 
-Underfull \hbox (badness 2158) in paragraph at lines 348--349
+Underfull \hbox (badness 2158) in paragraph at lines 321--322
  \OT1/ptm/b/n/10 Ap-pen-dices. \OT1/ptm/m/n/10 Any ap-pen-dices fol-low the ac-
 knowl-edg-
  []
 
 
-Underfull \hbox (badness 2035) in paragraph at lines 351--352
+Underfull \hbox (badness 2035) in paragraph at lines 324--325
  \OT1/ptm/b/n/10 Ref-er-ences \OT1/ptm/m/n/10 The ref-er-ences sec-tion should 
 be la-beled
  []
 
-[5]
-Underfull \hbox (badness 10000) in paragraph at lines 359--360
+
+Underfull \hbox (badness 10000) in paragraph at lines 332--333
  \OT1/ptm/b/n/10 Low-Resolution Bitmaps. \OT1/ptm/m/n/10 You may not use low-
  []
 
 
-Underfull \hbox (badness 5403) in paragraph at lines 359--360
+Underfull \hbox (badness 5403) in paragraph at lines 332--333
 \OT1/ptm/m/n/10 resolution (such as 72 dpi) screen-dumps and GIF
  []
 
-[6]
+[5] [6]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 431.
- [7]
-Underfull \hbox (badness 1028) in paragraph at lines 484--485
+(Font)              <12> on input line 404.
+
+Underfull \hbox (badness 1028) in paragraph at lines 457--458
 \OT1/ptm/m/n/10 L[]T[]X is a dif-fi-cult pro-gram to mas-ter. If you've used
  []
 
 
-Underfull \hbox (badness 1389) in paragraph at lines 484--485
+Underfull \hbox (badness 1389) in paragraph at lines 457--458
 \OT1/ptm/m/n/10 that soft-ware, and this doc-u-ment didn't help or some
  []
 
 
-Underfull \hbox (badness 1087) in paragraph at lines 484--485
+Underfull \hbox (badness 1087) in paragraph at lines 457--458
 \OT1/ptm/m/n/10 2002/08/13) about ob-tain-ing cor-rect PS/PDF out-put on
  []
 
-[8
+[7] [8
 
 ] (ProjectWriteup.aux) ) 
 Here is how much of TeX's memory you used:
- 444 strings out of 493323
- 5584 string characters out of 3139068
- 64160 words of memory out of 3000000
- 4014 multiletter control sequences out of 15000+200000
- 31388 words of font info for 60 fonts, out of 3000000 for 9000
+ 435 strings out of 493323
+ 5494 string characters out of 3139068
+ 65160 words of memory out of 3000000
+ 4009 multiletter control sequences out of 15000+200000
+ 27462 words of font info for 54 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  23i,10n,20p,990b,242s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/base/8r.en
@@ -235,7 +231,7 @@ fonts/cm/cmsy9.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.
 pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program F
 iles/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/f
 onts/type1/urw/times/utmri8a.pfb>
-Output written on ProjectWriteup.pdf (8 pages, 156879 bytes).
+Output written on ProjectWriteup.pdf (8 pages, 156242 bytes).
 PDF statistics:
  74 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
