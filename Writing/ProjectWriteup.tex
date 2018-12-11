@@ -15,7 +15,7 @@
 	% The file aaai.sty is the style file for AAAI Press 
 	% proceedings, working notes, and technical reports.
 	%
-	\title{Formatting Instructions \\for Authors Using \LaTeX{}}
+	\title{There is a pot of gold, you just don't see it: \\ Applying Rainbow to partially observable environments}
 	\author{David Slayback\\
 		Northeastern University College of Computer and Information Science\\
 		440 Huntington Ave, No. 202\\
@@ -24,75 +24,67 @@
 	\maketitle
 	\begin{abstract}
 		\begin{quote}
-			AAAI creates proceedings, working notes, and technical reports directly from electronic source furnished by the authors. To ensure that all papers in the publication have a uniform appearance, authors must adhere to the following instructions. 
+			Recent breakthroughs in deep reinforcement learning have led to AI solutions to many previously untenable games and environments. ViZDoom, an interface to the popular first person shooter (FPS) DOOM, is a particularly informative environment because of the partial observability of the state and potential complexity of the actions. This paper details an attempt to apply Rainbow, a reinforcement learning (RL) algorithm combining several improvements to Deep Q-Networks(DQN), to different scenarios within the ViZDoom environment. Preliminary results reveal the difficulty of the environment and offer insights into future directions for improving agent performance.
 		\end{quote}
-	\end{abstract}
-	
-	\noindent Congratulations on having a paper selected for inclusion in an AAAI Press proceedings or technical report! This document details the requirements necessary to get your accepted paper published using \LaTeX{}. If you are using Microsoft Word, instructions are provided in a different document. If you want to use some other formatting software, you must obtain permission from AAAI Press first. 
-	
-	The instructions herein are provided as a general guide for experienced \LaTeX{} users who would like to use that software to format their paper for an AAAI Press publication or report. If you are not an experienced \LaTeX{} user, do not use it to format your paper. AAAI cannot provide you with support and the accompanying style files are \textbf{not} guaranteed to work. If the results you obtain are not in accordance with the specifications you received, you must correct your source file to achieve the correct result. 
-	
-	These instructions are generic. Consequently, they do not include specific dates, page charges, and so forth. Please consult your specific written conference instructions for details regarding your submission. Please review the entire document for specific instructions that might apply to your particular situation. All authors must comply with the following:
-	
-	\begin{itemize}
-		\item You must use the latest AAAI Press \LaTeX{} macro.
-		\item Download the author kit.
-		\item Complete, sign, and return by the deadline the AAAI copyright form (proceedings authors) or distribution license (technical report authors).
-		\item Read and format your paper source and PDF according to the formatting instructions for authors.
-		\item Submit your electronic files and abstract using our electronic submission form \textbf{on time.}
-		\item Submit your copyright form, and any required page or formatting charges to AAAI Press so that they are received by the deadline.
-		\item Check every page of your paper before submitting it.
-	\end{itemize}
+	\end{abstract} 
 	
 	\section{Introduction}
-	All papers submitted for publication by AAAI Press must be accompanied by a valid signed copyright form or, in the case of technical reports, by a valid signed permission to distribute form. There are no exceptions to this requirement. You must send us the original version of this form. However, to meet the deadline, you may fax (1-650-321-4457) or scan and e-mail the form (pubforms14@aaai.org) to AAAI by the submission deadline, and then mail the original via postal mail to the AAAI office. \textbf{If you fail to send in a signed copyright or permission form, your paper will not be published.} You will find PDF versions of the AAAI copyright and permission to distribute forms in the author kit.
+	
+	In the past decade, with new access to data and computational power, artificial intelligence (AI) researchers have made enormous strides. Deep learning (DL), a type of machine learning once considered computationally intractable, has revolutionized our approach to many problems. Deep neural networks (DNNs) provide a generalizable alternative to previous domain-specific solutions. 
 	
 	\section{Background}
-	We need source and PDF files that can be used in a variety of ways and can be output on a variety of devices. AAAI imposes some requirements on your source and PDF files that must be followed. Most of these requirements are based on our efforts to standardize conference manuscript properties and layout. These requirements are as follows, and all papers submitted to AAAI for publication must comply:
 	
-	\begin{itemize}
-		\item Your .tex file must compile in PDF\LaTeX{} --- \textbf{ no .ps or .eps figure files.}
-		\item All fonts must be embedded in the PDF file --- \textbf{ this includes your figures.}
-		\item Modifications to the style sheet (or your document) in an effort to avoid extra page charges are NOT allowed.
-		\item No type 3 fonts may be used (even in illustrations).
-		\item Your title must follow US capitalization rules.
-		\item \LaTeX{} documents must use the Times or Nimbus font package (do not use Computer Modern for the text of your paper).
-		\item No \LaTeX{} 209 documents may be used or submitted.
-		\item Fonts that require non-English language support (CID and Identity-H) must be converted to outlines or removed from the document (even if they are in a graphics file embedded in the document). 
-		\item Two-column format in AAAI style is required for all papers.
-		\item The paper size for final submission must be US letter. No exceptions.
-		\item The source file must exactly match the PDF.
-		\item The document margins must be as specified in the formatting instructions.
-		\item The number of pages and the file size must be as specified for your event.
-		\item No document may be password protected.
-		\item Neither the PDFs nor the source may contain any embedded links or bookmarks.
-		\item Your source and PDF must not have any page numbers, footers, or headers.
-		\item Your PDF must be compatible with Acrobat 5 or higher.
-		\item Your \LaTeX{} source file (excluding references) must consist of a \textbf{single} file (use of the ``input" command is not allowed.
-		\item Your graphics must be sized appropriately outside of \LaTeX{} (do not use the ``clip" command) .
-	\end{itemize}
+	Reinforcement learning (RL) is a method by which some \textit{agent} can learn to act in an unknown \textit{environment} to maximize some goal expressed via \textit{rewards}. RL is unique in that the agent does not need to be told \textit{how} to act; rather, it learns through trial-and-error by encountering rewards as it acts and attempting to choose actions which maximize future rewards.
 	
-	If you do not follow the above requirements, it is likely that we will be unable to publish your paper.
+	\subsection{RL Terminology}
+	 
+	 The interaction of the agent and the environment is formalized as a Markov Decision Process (MDP). An MDP is defined by a tuple $\langle S, A, T, R, \gamma \rangle$ where:
+	 \begin{itemize}
+	 	\item $S$ is the set of possible states of the environment
+	 	\item $A$ is the set of possible actions of the agent
+	 	\item $T$ is the transition function $T(s,a,s')$ giving the probability of reaching each state $s'$ from state $s$ when taking action $t$
+	 	\item $R$ is the reward function $R(s,a)$ giving the reward of taking action $a$ in state $s$
+	 	\item $\gamma$ is a discount factor applied to future rewards
+	 \end{itemize}
+ 	
+ 	At each timestep $t\in \tau$ (where $\tau$ is the end time), the agent takes an action $a_t$ from start state $s_t$. The state changes to $s_{t+1}$, and the agent receives an immediate reward $r_{t+1}$. The agent chooses it's action based on a \textit{policy} $\pi (a_t|s_t)$ which gives the probability of taking action $a_t$ in state $s_t$. The objective of reinforcement learning is to achieve an optimal policy $\pi^*$ which maximizes the reward the agent accumulates in the environment (i.e., the \textit{return, $G$}). 
+ 	
+ 	In value-based reinforcement learning, the agent learns $\pi$ by determining the \textit{Q-value} of its actions, where $Q^\pi(s,a)$ is the expected return of taking action $a$ in state $s$ if the agent chooses future actions based on policy $\pi$. It then derives a policy that takes the actions with the highest value, updating values as it encounters rewards.
+ 	
+ 	\subsection{Large state spaces}
+ 	
+ 	One problem with this formalism is computational. In simple environments with few states and actions, an agent can store and calculate each $Q(s,a)$. In more complex environments, however, if the agent is even able to store all possible $Q(s,a)$, the number of actions it must take to accurately calculate them increases exponentially.
+ 	
+ 	This issue can be solved by replacing the tables with DNNs, allowing the agent to learn reduced approximations of policies and values. Specifically, in the original DQN architecture* used for Atari games, the agent has a network that computes the Q-value for any input combination of pixels from the game frames. Training an accurate DQN is data-intensive, but can leverage a \textit{replay buffer} to reuse the agent's experiences and learn \textit{off-policy} (i.e., without taking actions in the environment).
+ 	
+ 	\subsection{Partial Observability}
+ 	
+ 	Another problem with the original formalism is sensory. In most environments, it's unrealistic for the agent to have access to the full state of the environment. Rather, the agent receives \textit{observations} from its sensors in the form of camera images, communications, or other modalities. An extended formalism to capture this is known as a Partially Observable MDP (POMDP). A POMDP is an extended MDP defined by a tuple $\langle S, A, T, R, \Omega, O, \gamma \rangle$, where:
+ 	\begin{itemize}
+ 		\item $\Omega$ is the set of possible observations $o$
+ 		\item $O$ is the conditional probability function $O(o|s',a)$ specifying the probability of the agent observing $o$ after taking action $a$ and reaching environment state $s'$
+ 	\end{itemize}
+ 
+ 	At each timestep $t\in \tau$, the environment is in state $s_t$, the agent takes action $a_t$ and receives observation $o_t+1$ and reward $o_t+1$. The environmental state may change, but the agent doesn't know. Rather, the agent determines a policy either directly from observation $\pi(a_t|o_t)$ or by developing a belief about the state $s$ from its observations ($\pi(a_t|b_t)$ where $b_t$ is a \textit{belief} about the current state). 
+ 	
+ 	However, a single observation may not be sufficient to determine an optimal action or belief, so these are often conditioned on some history of actions, observations, and rewards $h$. Maintaining such a history is itself a problem, since it is difficult to know which experiences are relevant and impossible to store all of them.
+ 	
+ 	\subsection{Deep Recurrent Q-Networks}
+ 	
+ 	One potential solution to this is to approximate the history in the same way that DQN approximated the Q-values. Deep Recurrent Q Networks (DRQNs) are an extension to DQN that incorporate \textit{recurrent} network layers. A recurrent network layer is any layer whose output is conditioned on previous inputs. What outputs are conditioned on is known as the \textit{hidden state} of the layer and serves as an approximate memory.
+ 	
+ 	Thus, by incorporating recurrent layers, a DRQN is able to infer the state from temporally extended inputs, and so its calculated $Q(o,a)$ can more accurately reflect sequences of events. The original DQN approximated this by providing input as a sequence of 4 frames*.
+ 	
+ 	\subsection{Other extensions}
+ 	
+ 	 
+ 	
+	 
 	
 	\section{Related Work}
 	You must submit the following items to ensure that your paper is published:
-	\begin{itemize}
-		\item A fully-compliant PDF file.
-		\item Your  \LaTeX{}  source file submitted as a \textbf{single} .tex file (do not use the ``input" command to include sections of your paper --- every section must be in the single source file). The only exception is the bibliography, which you may include separately. Your source must compile on our system, which includes the standard \LaTeX{} support files.
-		\item All your graphics files.
-		\item The \LaTeX{}-generated files (e.g. .aux and .bib file, etc.) for your compiled source.
-		\item All the nonstandard style files (ones not commonly found in standard \LaTeX{} installations) used in your document (including, for example, old algorithm style files). If in doubt, include it.
-	\end{itemize}
-	
-	Your \LaTeX{} source will be reviewed and recompiled on our system (if it does not compile, you may incur late fees).   \textbf{Do not submit your source in multiple text files.} Your single \LaTeX{} source file must include all your text, your bibliography (formatted using aaai.bst), and any custom macros. Accompanying this source file, you must also supply any nonstandard (or older) referenced style files and all your referenced graphics files. 
-	
-	Your files should work without any supporting files (other than the program itself) on any computer with a standard \LaTeX{} distribution. Place your PDF and source files in a single tar, zipped, gzipped, stuffed, or compressed archive. Name your source file with your last (family) name.
-	
-	\textbf{Do not send files that are not actually used in the paper.} We don't want you to send us any files not needed for compiling your paper, including, for example, this instructions file, unused graphics files, and so forth.  A shell script (created by an AAAI member --- it might not work without modification on your system) that might help you create the \LaTeX{} source package is included in the Author Kit.
 	
 	\section{Project Description}
-	
-	The latest version of the AAAI style file is available on AAAI's website. Download this file and place it in a file named ``aaai.sty" in the \TeX\ search path. Placing it in the same directory as the paper should also work. You must download the latest version of the complete author kit so that you will have the latest instruction set.
 	
 	\subsection{Experiments}
 	
