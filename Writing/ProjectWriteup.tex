@@ -47,15 +47,19 @@
 	 	\item $\gamma$ is a discount factor applied to future rewards
 	 \end{itemize}
  	
- 	At each timestep $t\in \tau$ (where $\tau$ is the end time), the agent takes an action $a_t$ from start state $s_t$. The state changes to $s_{t+1}$, and the agent receives an immediate reward $r_{t+1}$. The agent chooses it's action based on a \textit{policy} $\pi (a_t|s_t)$ which gives the probability of taking action $a_t$ in state $s_t$. The objective of reinforcement learning is to achieve an optimal policy $\pi^*$ which maximizes the reward the agent accumulates in the environment (i.e., the \textit{return, $G$}). 
+ 	At each timestep $t\in \tau$ (where $\tau$ is the end time), the agent takes an action $a_t$ from start state $s_t$. The state changes to $s_{t+1}$, and the agent receives an immediate reward $r_{t+1}$. The agent chooses it's action based on a \textit{policy} $\pi (a_t|s_t)$ which gives the probability of taking action $a_t$ in state $s_t$. The objective of reinforcement learning is to achieve an optimal policy $\pi^*$ which maximizes the reward the agent accumulates in the environment (i.e., the \textit{return}, $G_t=\sum_{n=0}^{\infty}\gamma^k_tR_{t+k+1}$). 
  	
- 	In value-based reinforcement learning, the agent learns $\pi$ by determining the \textit{Q-value} of its actions, where $Q^\pi(s,a)$ is the expected return of taking action $a$ in state $s$ if the agent chooses future actions based on policy $\pi$. It then derives a policy that takes the actions with the highest value, updating values as it encounters rewards.
+ 	In value-based reinforcement learning, the agent learns $\pi$ by determining the \textit{Q-value} of its actions, where $Q^\pi(s,a)$ is the expected return of taking action $a$ in state $s$ if the agent chooses future actions based on policy $\pi$. It then derives a policy that takes the actions with the highest value, updating values as it encounters rewards. In \textit{TD-learning}, the q-value is updated after each action, minimizing the difference between the \textit{TD-target} (i.e., the currently estimated value of the state) and the combination of immediate reward and next state value seen (known as \textit{TD-error}).
  	
  	\subsection{Large state spaces}
  	
  	One problem with this formalism is computational. In simple environments with few states and actions, an agent can store and calculate each $Q(s,a)$. In more complex environments, however, if the agent is even able to store all possible $Q(s,a)$, the number of actions it must take to accurately calculate them increases exponentially.
  	
- 	This issue can be solved by replacing the tables with DNNs, allowing the agent to learn reduced approximations of policies and values. Specifically, in the original DQN architecture* used for Atari games, the agent has a network that computes the Q-value for any input combination of pixels from the game frames. Training an accurate DQN is data-intensive, but can leverage a \textit{replay buffer} to reuse the agent's experiences and learn \textit{off-policy} (i.e., without taking actions in the environment).
+ 	This issue can be solved by replacing the tables with DNNs, allowing the agent to learn reduced approximations of policies and values. Specifically, in the original DQN architecture* used for Atari games, the agent has a network that computes the Q-value for any input combination of pixels from the game frames. This network is parameterized by weights $\theta$ ($\widehat{\theta}$ being a periodic copy of the weights), such that the loss can be defined as:
+ 	\begin{equation}
+	 	(R_{t+1}+\gamma_{t+1}max_{a'}q_{\widehat{\theta}}(s_{t+1}, a')-q_{\theta}(s_t, a_t)
+ 	\end{equation}
+ 	Training an accurate DQN is data-intensive, but can leverage a \textit{replay buffer} to reuse the agent's experiences and learn \textit{off-policy} (i.e., without taking actions in the environment). This buffer of transitions $(s_t, a_t, r_{t+1}, \gamma_{t+1}, s_{t+1})$ can be sampled in random batches to provide additional training at only the cost of computational time.
  	
  	\subsection{Partial Observability}
  	
@@ -81,12 +85,32 @@
 	
 	The primary motivation behind this paper was Rainbow, a paper which combined several improvements to DQN*. Specifically, Rainbow applies:
 	\begin{itemize}
-		\item \textbf{Double Q-Learning}: Using a target network to reduce maximization bias*
-		\item \textbf{Prioritized Replay}: Weighting experiences based on their difference from expected value*
-		\item \textbf{Dueling Networks}: Dividing the output of a network into the value of a state and the advantage of taking an action*
-		\item \textbf{Multi-step Learning}: Calculating the return of multiple future steps rather than just the immediate reward and expected value of the next state*
-		\item \textbf{Distributional RL}: Maintaining a distribution of expected Q-values rather than a single one*
-		\item \textbf{Noisy Nets}: Replacing $\epsilon$-greedy exploration (i.e., taking a random action with probability $\epsilon$) with implicit exploration in the form of injected noise during training*
+		\item \textbf{Double Q-Learning}: Using a target network to reduce maximization bias*. Chooses the action with the policy network, but evaluates the chosen action with the target network. Loss:
+		
+		\begin{equation}
+			(R_{t+1}+\gamma_{t+1}q_{\widehat{\theta}}(s_{t+1}, argmax_{a'}q_{\theta}(s_{t+1}, a')-q_{\theta}(s_t, a_t))^2
+		\end{equation}
+	
+		\item \textbf{Prioritized Replay}: Weighting experiences based on their difference from expected value*. Sample transitions with probability proportional to the last encountered \textit{TD-error} at that transition.
+		\begin{equation}
+			p_t \propto |R_{t+1} + \gamma_{t+1}max_{a'}q_{\widehat{\theta}}(s_{t+1}, a')-q_{\theta}(s_t, a_t)|^\omega
+		\end{equation}
+		\item \textbf{Dueling Networks}: Dividing the output of a network into two streams corresponding to the value of a state and the relative advantage of taking an action*. The output is the value plus the best action minus the mean over all actions.
+		
+		\item \textbf{Multi-step Learning}: Calculating the return of multiple future steps rather than just the immediate reward and expected value of the next state*. The n-step return is:
+		
+		\begin{equation}
+			R_t^{(n)}=\sum_{k=0}^{n-1}\gamma_t^{(k)}R_{t+k+1}
+		\end{equation}
+		
+		
+		\item \textbf{Distributional RL}: Maintaining a distribution of expected Q-values rather than a single one*. Goal is to minimize the  KL divergence between the distribution $d_t$ and the target distribution $d_t'$
+		
+		\item \textbf{Noisy Nets}: Replacing $\epsilon$-greedy exploration (i.e., taking a random action with probability $\epsilon$) with implicit exploration in the form of injected noise during training*. In place of a linear layer $y=b + Wx$: 
+		
+		\begin{equation}
+			y = (b+Wx)+(b_{noisy} \odot \epsilon^b + (W_{noisy}\odot \epsilon^w)x)
+		\end{equation}
 	\end{itemize}
 	Rainbow and its ablations were tested extensively on the Atari environment in an attempt to determine which improvements made the biggest difference and explain the potential advantages of each. They concluded that prioritized replay and multi-step learning were the most impactful additions, but that the impacts of all the improvements were dependent on the environment chosen. Thus, it would be of interest to see how these improvements interact with more complex, partially-observable environments. 
 	
@@ -101,9 +125,37 @@
 		\item As in Rainbow, permute which algorithms are used for the agent and observe how the permutation affects training
 	\end{itemize}
 
-	For the first part, I decided to re-use Arnold's architecture. 
+	For the first part, all networks are implemented in PyTorch. At first, I decided to re-use Arnold's architecture. As it had won a full deathmatch competition, it seemed that the architecture they used must have been a reasonable choice for the environment. I made one major change, though. Originally, Arnold took advantage of the game providing labels that flagged whether different entities were on the screen (e.g., flagging that an enemy is in view). They only used this during training, but it seemed an unfair advantage, so I removed it. The architecture is as follows:
+	\begin{itemize}
+		\item Each game frame is processed to 3x60x108 pixels. The authors noted that both color and a wide aspect ratio seemed to speed training.
+		\item This input goes through two convolutional layers (with ReLU activation and batch normalization)
+		\item Additionally, the game variables for health and ammo are processed through an embedding layer
+		\item Both outputs are fed into a 1-layer LSTM with 512 hidden units
+		\item The LSTM's output is mapped to actions through a linear layer
+		\item For experiments using the dueling architecture, the final linear layer was replaced with two linear layers to serve as value and advantage streams. Their outputs were fused together as mentioned above.
+	\end{itemize} 
+
+	Additionally, I adapted the code for prioritized replay and n-step learning from a different repository*. For this instantiation, I did not implement distributional RL due to the complexity.
 	
+	After this modified architecture showed poor results, I wrote an entirely new version for a basic 1-frame DQN that heavily borrowed from SLM lab* and a series of pytorch tutorials*. In this case, I was able to adapt all 6 Rainbow algorithms.
+	
+	When the new architecture also showed poor results, I extended it to a stacked-frame DQN similar to the original Atari paper. 
+	
+	For the second part, I had originally intended to define my own scenario. VizDoom provides a number of useful prebuilt scenarios, but I felt that most of them would be too simple. As it became clear that my agent was failing to learn, I turned back to the original scenarios. The scenario I tested my Arnold reimplementation on is called "Defend the Line", and the scenario I tested the others on is "Defend the Center". Both are described in the experiments section.
+	
+	For the third part, I attempted to replicate the ablations of the rainbow paper. For each series of experiments, I did a run with the base architecture, with the fully augmented rainbow version, and then one run for each component to be removed in turn. I hypothesized that the VizDoom environment might have a different pattern of impact from these enhancements than the Atari games had. 
+	 
 	\subsection{Experiments}
+	
+	The scenarios are defined as follows:
+	\begin{itemize}
+		\item \textbf{Defend the Line}: The agent starts at the end of a hallway with limited ammunition. 3 melee and 3 ranged monsters spawn at the other end. These monsters can initially be killed by 1 shot, but as new ones spawn, they take progressively more damage.
+		\subitem Reward: +1 for each kill
+		\subitem Actions: Turn left, turn right, attack
+		\item \textbf{Defend the Center}: The agent starts in the center of a room with limited ammunition. 3 melee monsters spawn randomly around the agent. All monsters can be killed with 1 shot.
+		\subitem Reward: +1 for each kill
+		\subitem Actions: Turn left, turn right, attack
+	\end{itemize}
 	
 	In the \LaTeX{} source for your paper, you \textbf{must} place the following lines as shown in the example in this subsection. This command set-up is for three authors. Add or subtract author and address lines as necessary, and uncomment the portions that apply to you. In most instances, this is all you need to do to format your paper in the Times font. The helvet package will cause Helvetica to be used for sans serif, and the courier package will cause Courier to be used for the typewriter font. These files are part of the PSNFSS2e package, which is freely available from many Internet sites (and is often part of a standard installation).
 	
