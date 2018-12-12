@@ -1,0 +1,117 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Arulkumaran}{2018}]{kaixhin2018}
+Arulkumaran, K.
+\newblock 2018.
+\newblock Rainbow.
+\newblock \url{https://github.com/Kaixhin/Rainbow}.
+
+\bibitem[\protect\citeauthoryear{Bellemare, Dabney, and
+  Munos}{2017}]{bellemare2017distributional}
+Bellemare, M.~G.; Dabney, W.; and Munos, R.
+\newblock 2017.
+\newblock A distributional perspective on reinforcement learning.
+\newblock {\em arXiv preprint arXiv:1707.06887}.
+
+\bibitem[\protect\citeauthoryear{Chaplot and Lample}{2017}]{chaplot2017arnold}
+Chaplot, D.~S., and Lample, G.
+\newblock 2017.
+\newblock Arnold: An autonomous agent to play fps games.
+\newblock In {\em AAAI},  5085--5086.
+
+\bibitem[\protect\citeauthoryear{Fettes}{2018}]{fettes2018}
+Fettes, Q.
+\newblock 2018.
+\newblock Deeprl-tutorials.
+\newblock \url{https://github.com/qfettes/DeepRL-Tutorials}.
+
+\bibitem[\protect\citeauthoryear{Fortunato \bgroup et al\mbox.\egroup
+  }{2017}]{fortunato2017noisy}
+Fortunato, M.; Azar, M.~G.; Piot, B.; Menick, J.; Osband, I.; Graves, A.; Mnih,
+  V.; Munos, R.; Hassabis, D.; Pietquin, O.; et~al.
+\newblock 2017.
+\newblock Noisy networks for exploration.
+\newblock {\em arXiv preprint arXiv:1706.10295}.
+
+\bibitem[\protect\citeauthoryear{Hasselt}{2010}]{hasselt2010double}
+Hasselt, H.~V.
+\newblock 2010.
+\newblock Double q-learning.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  2613--2621.
+
+\bibitem[\protect\citeauthoryear{Hausknecht and
+  Stone}{2015}]{hausknecht2015deep}
+Hausknecht, M., and Stone, P.
+\newblock 2015.
+\newblock Deep recurrent q-learning for partially observable mdps.
+\newblock {\em CoRR, abs/1507.06527} 7(1).
+
+\bibitem[\protect\citeauthoryear{Hessel \bgroup et al\mbox.\egroup
+  }{2017}]{hessel2017rainbow}
+Hessel, M.; Modayil, J.; Van~Hasselt, H.; Schaul, T.; Ostrovski, G.; Dabney,
+  W.; Horgan, D.; Piot, B.; Azar, M.; and Silver, D.
+\newblock 2017.
+\newblock Rainbow: Combining improvements in deep reinforcement learning.
+\newblock {\em arXiv preprint arXiv:1710.02298}.
+
+\bibitem[\protect\citeauthoryear{Kempka \bgroup et al\mbox.\egroup
+  }{2016}]{kempka2016vizdoom}
+Kempka, M.; Wydmuch, M.; Runc, G.; Toczek, J.; and Ja{\'s}kowski, W.
+\newblock 2016.
+\newblock Vizdoom: A doom-based ai research platform for visual reinforcement
+  learning.
+\newblock In {\em Computational Intelligence and Games (CIG), 2016 IEEE
+  Conference on},  1--8.
+\newblock IEEE.
+
+\bibitem[\protect\citeauthoryear{Lample}{2018}]{lample2018}
+Lample, G.
+\newblock 2018.
+\newblock Arnold.
+\newblock \url{https://github.com/glample/Arnold}.
+
+\bibitem[\protect\citeauthoryear{Mnih \bgroup et al\mbox.\egroup
+  }{2015}]{mnih2015human}
+Mnih, V.; Kavukcuoglu, K.; Silver, D.; Rusu, A.~A.; Veness, J.; Bellemare,
+  M.~G.; Graves, A.; Riedmiller, M.; Fidjeland, A.~K.; Ostrovski, G.; et~al.
+\newblock 2015.
+\newblock Human-level control through deep reinforcement learning.
+\newblock {\em Nature} 518(7540):529.
+
+\bibitem[\protect\citeauthoryear{Schaul \bgroup et al\mbox.\egroup
+  }{2015}]{schaul2015prioritized}
+Schaul, T.; Quan, J.; Antonoglou, I.; and Silver, D.
+\newblock 2015.
+\newblock Prioritized experience replay.
+\newblock {\em arXiv preprint arXiv:1511.05952}.
+
+\bibitem[\protect\citeauthoryear{Sutton and
+  Barto}{2018}]{sutton2018reinforcement}
+Sutton, R.~S., and Barto, A.~G.
+\newblock 2018.
+\newblock {\em Reinforcement learning: An introduction}.
+\newblock MIT press.
+
+\bibitem[\protect\citeauthoryear{Wah Loon~Keng}{2017}]{kenggraesser2017slmlab}
+Wah Loon~Keng, L.~G.
+\newblock 2017.
+\newblock Slm-lab.
+\newblock \url{https://github.com/kengz/SLM-Lab}.
+
+\bibitem[\protect\citeauthoryear{Wang \bgroup et al\mbox.\egroup
+  }{2015}]{wang2015dueling}
+Wang, Z.; Schaul, T.; Hessel, M.; Van~Hasselt, H.; Lanctot, M.; and De~Freitas,
+  N.
+\newblock 2015.
+\newblock Dueling network architectures for deep reinforcement learning.
+\newblock {\em arXiv preprint arXiv:1511.06581}.
+
+\bibitem[\protect\citeauthoryear{Wydmuch, Kempka, and
+  Ja{\'s}kowski}{2018}]{wydmuch2018vizdoom}
+Wydmuch, M.; Kempka, M.; and Ja{\'s}kowski, W.
+\newblock 2018.
+\newblock Vizdoom competitions: Playing doom from pixels.
+\newblock {\em IEEE Transactions on Games}.
+
+\end{thebibliography}
