@@ -81,8 +81,7 @@ class BaseAgent(object):
 
         if os.path.isfile(fname_model):
             self.model.load_state_dict(torch.load(fname_model))
-            if self.params.double:
-                self.target_model.load_state_dict(self.model.state_dict())
+            self.target_model.load_state_dict(self.model.state_dict())
 
         if os.path.isfile(fname_optim):
             self.optimizer.load_state_dict(torch.load(fname_optim))
@@ -158,13 +157,11 @@ class RainbowAgent(BaseAgent):
 
         # move to correct device
         self.model = self.model.to(self.device)
-        if self.params.double:
-            self.target_model.to(self.device)
+        self.target_model.to(self.device)
 
         # Set to training mode
         self.model.train()
-        if self.params.double:
-            self.target_model.train()
+        self.target_model.train()
 
         self.update_count = 0
 
@@ -190,11 +187,8 @@ class RainbowAgent(BaseAgent):
     def declare_networks(self):
         modelFn = chooseModel(self.params)
         self.model = modelFn(self.params)
-        if self.params.double:
-            self.target_model = modelFn(self.params)
-            self.target_model.load_state_dict(self.model.state_dict())
-        else:
-            self.target_model = None
+        self.target_model = modelFn(self.params)
+        self.target_model.load_state_dict(self.model.state_dict())
 
     def declare_memory(self):
         if not self.params.recurrent:
@@ -279,12 +273,8 @@ class RainbowAgent(BaseAgent):
                                         dtype=torch.float) + 1. / self.atoms
             if not empty_next_state_values:
                 max_next_action = self.get_max_next_state_action_dist(non_final_next_states)  # Best action next state
-                if self.target_model is not None:
-                    self.target_model.sample_noise()
-                    max_next_dist[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)  # From target model, dist values
-                else:
-                    self.model.sample_noise()
-                    max_next_dist[non_final_mask] = self.model(non_final_next_states).gather(1, max_next_action)
+                self.target_model.sample_noise()
+                max_next_dist[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)  # From target model, dist values
                 max_next_dist = max_next_dist.squeeze()
 
             Tz = batch_reward.view(-1, 1) + (self.gamma ** self.nsteps) * self.supports.view(1, -1) * non_final_mask.to(
@@ -326,11 +316,8 @@ class RainbowAgent(BaseAgent):
             max_next_q_values = torch.zeros(self.batchSize, device=self.device, dtype=torch.float).unsqueeze(dim=1)
             if not empty_next_state_values:
                 max_next_action = self.get_max_next_state_action(non_final_next_states)
-                if self.target_model is not None:
-                    self.target_model.sample_noise()
-                    max_next_q_values[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)
-                else:
-                    max_next_q_values[non_final_mask] = self.model(non_final_next_states).gather(1, max_next_action)
+                self.target_model.sample_noise()
+                max_next_q_values[non_final_mask] = self.target_model(non_final_next_states).gather(1, max_next_action)
             expected_q_values = batch_reward + ((self.gamma ** self.nsteps) * max_next_q_values)
 
         diff = (expected_q_values - current_q_values)
@@ -461,8 +448,6 @@ class RainbowAgent(BaseAgent):
 
     # Update target model according to frequency
     def update_target_model(self):
-        if not self.params.double:
-            return
         self.update_count += 1
         self.update_count = self.update_count % self.targetUpdateFrequency
         if self.update_count == 0:
@@ -470,11 +455,18 @@ class RainbowAgent(BaseAgent):
 
     # Get best action (standard)
     def get_max_next_state_action(self, next_states):
-        return self.model(next_states).max(dim=1)[1].view(-1, 1)
+        if not self.params.double:
+            return self.target_model(next_states).max(dim=1)[1].view(-1, 1)
+        else:
+            return self.model(next_states).max(dim=1)[1].view(-1, 1)
+
 
     # Get best action (distributed)
     def get_max_next_state_action_dist(self, next_states):
-        next_dist = self.model(next_states) * self.supports
+        if self.params.double:
+            next_dist = self.model(next_states) * self.supports
+        else:
+            next_dist = self.target_model(next_states) * self.supports
         return next_dist.sum(dim=2).max(1)[1].view(next_states.size(0), 1, 1).expand(-1, -1, self.atoms)
 
     # At end of episode, get the last n step return and append to memory
@@ -493,12 +485,10 @@ class RainbowAgent(BaseAgent):
     def eval(self):
         self.evalMode = 1
         self.model.eval()
-        if self.target_model is not None:
-            self.target_model.eval()
+        self.target_model.eval()
 
     # Set to train
     def train(self):
         self.evalMode = 0
         self.model.train()
-        if self.target_model is not None:
-            self.target_model.train()
+        self.target_model.train()
